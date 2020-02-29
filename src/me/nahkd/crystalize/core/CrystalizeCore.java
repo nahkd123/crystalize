@@ -127,6 +127,12 @@ public class CrystalizeCore {
 				String sign = matcher.previousMatched;
 				return new MultipleExpressions(left, sign, right);
 			}
+		} else if (exp.contains("(") && exp.endsWith(")")) {
+			// Function
+			String functionName = exp.split("\\(")[0];
+			String paramsString = exp.substring(functionName.length() + 1, exp.length() - 1);
+			FunctionExpression expFunc = new FunctionExpression((ObjectFunction) instance.getObject(functionName), paramsToExpressions(paramsString, instance));
+			return expFunc;
 		}
 		LangMatcher matcher = new LangMatcher(exp);
 		// System.out.println(exp);
@@ -161,6 +167,38 @@ public class CrystalizeCore {
 			if (instance.hasObject(a)) return new VariableExpression(instance.getObject(a));
 			else throw new Error("Variable " + a + " not found in current context!");
 		}
+	}
+	private static final Expression[] paramsToExpressions(String params, ObjectsCompound instance) {
+		int mode = 0;
+		boolean strEscape = false;
+		char[] arr = params.toCharArray();
+		String hold = "";
+		ArrayList<String> paramss = new ArrayList<String>();
+		for (int i = 0; i < arr.length; i++) {
+			char ch = arr[i];
+			if (mode == 0) {
+				if (ch == '"') {
+					mode = 1;
+					hold += ch;
+				} else if (ch == ',') {
+					if (hold.length() == 0) continue;
+					else {
+						paramss.add(hold);
+						hold = "";
+					}
+				} else hold += ch;
+			} else if (mode == 1) {
+				if (strEscape) strEscape = false;
+				else if (ch == '"') mode = 0;
+				else if (ch == '\\') strEscape = true;
+				hold += ch;
+			}
+		}
+		if (hold.length() > 0) paramss.add(hold);
+		
+		Expression[] exps = new Expression[paramss.size()];
+		for (int i = 0; i < paramss.size(); i++) exps[i] = parseExpression(paramss.get(i), instance);
+		return exps;
 	}
 	
 	public static final Expression eval(ObjectsCompound instance, CrystalizeStatement... statements) {

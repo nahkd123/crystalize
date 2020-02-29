@@ -11,9 +11,7 @@ public class CompilerTest {
 		CrystalizeCore.setupCore(instance);
 		instance.objects.put("test", new InternalFunctionTest());
 		CrystalizeStatement[] compiled = CrystalizeCore.compile(""
-				+ "var a = \" lmao\";"
-				+ "var b = 69;"
-				+ "return \"Hello\" + a + \"hi\" + b;"
+				+ "print(\"hi\" + \" abc\")"
 				+ "", instance);
 		System.out.println(CrystalizeCore.eval(instance, compiled));
 	}
