@@ -1,0 +1,356 @@
+{
+	"meta": {
+		"format_version": "4.9",
+		"model_format": "free",
+		"box_uv": false
+	},
+	"name": "model2",
+	"model_identifier": "",
+	"visible_box": [
+		1,
+		1,
+		0
+	],
+	"variable_placeholders": "",
+	"variable_placeholder_buttons": [
+	],
+	"timeline_setups": [
+	],
+	"unhandled_root_fields": {
+	},
+	"resolution": {
+		"width": 16,
+		"height": 16
+	},
+	"elements": [
+		{
+			"name": "cube",
+			"box_uv": false,
+			"rescale": false,
+			"locked": false,
+			"render_order": "default",
+			"allow_mirror_modeling": true,
+			"from": [
+				0.1715728752538096,
+				0,
+				1.8284271247461907
+			],
+			"to": [
+				2.1715728752538097,
+				2,
+				3.8284271247461903
+			],
+			"autouv": 1,
+			"color": 9,
+			"rotation": [
+				0,
+				-45,
+				0
+			],
+			"origin": [
+				4,
+				0,
+				0
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					]
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						1.9999999999999996,
+						2
+					]
+				},
+				"south": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					]
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						1.9999999999999996,
+						2
+					]
+				},
+				"up": {
+					"uv": [
+						0,
+						0,
+						2,
+						1.9999999999999996
+					]
+				},
+				"down": {
+					"uv": [
+						0,
+						0,
+						2,
+						1.9999999999999996
+					]
+				}
+			},
+			"type": "cube",
+			"uuid": "b4db6c9b-892c-9e27-3b4c-8274520831d1"
+		},
+		{
+			"name": "cube",
+			"box_uv": false,
+			"rescale": false,
+			"locked": false,
+			"render_order": "default",
+			"allow_mirror_modeling": true,
+			"from": [
+				-1,
+				4,
+				-1
+			],
+			"to": [
+				1,
+				6,
+				1
+			],
+			"autouv": 1,
+			"color": 0,
+			"origin": [
+				0,
+				8,
+				0
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					]
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					]
+				},
+				"south": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					]
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					]
+				},
+				"up": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					]
+				},
+				"down": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					]
+				}
+			},
+			"type": "cube",
+			"uuid": "d0dc4e97-c924-3d1c-c9c4-e85ca107b9df"
+		},
+		{
+			"name": "locator",
+			"position": [
+				0,
+				4,
+				0
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
+			"ignore_inherited_scale": false,
+			"visibility": true,
+			"locked": false,
+			"entity_type": "minecraft:pig",
+			"nbt": "{}",
+			"uuid": "07b8a824-0487-be38-000e-5494859421ee",
+			"type": "locator"
+		}
+	],
+	"outliner": [
+		"b4db6c9b-892c-9e27-3b4c-8274520831d1",
+		{
+			"name": "bone",
+			"origin": [
+				0,
+				8,
+				0
+			],
+			"rotation": [
+				0,
+				45,
+				0
+			],
+			"color": 0,
+			"nbt": "{}",
+			"uuid": "3da59cb0-4db4-859e-1e5d-b7f52092b140",
+			"export": true,
+			"mirror_uv": false,
+			"isOpen": true,
+			"locked": false,
+			"visibility": true,
+			"autouv": 0,
+			"children": [
+				"d0dc4e97-c924-3d1c-c9c4-e85ca107b9df",
+				"07b8a824-0487-be38-000e-5494859421ee",
+				{
+					"name": "bone2",
+					"origin": [
+						0,
+						12,
+						0
+					],
+					"rotation": [
+						0,
+						45,
+						0
+					],
+					"color": 0,
+					"nbt": "{}",
+					"uuid": "c1b7c183-c20b-c5c9-9016-6e3760c91fd8",
+					"export": true,
+					"mirror_uv": false,
+					"isOpen": true,
+					"locked": false,
+					"visibility": true,
+					"autouv": 0,
+					"children": [
+					]
+				}
+			]
+		}
+	],
+	"textures": [
+	],
+	"animations": [
+		{
+			"uuid": "1a78ed18-da6d-eb28-ef76-86e99b420f53",
+			"name": "animation.idle",
+			"loop": "once",
+			"override": false,
+			"length": 1,
+			"snapping": 24,
+			"selected": false,
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "",
+			"animators": {
+				"3da59cb0-4db4-859e-1e5d-b7f52092b140": {
+					"name": "bone",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1",
+									"y": "1",
+									"z": "1"
+								}
+							],
+							"uuid": "6a869977-1eb4-ddf7-984d-ab6d19c8fe3c",
+							"time": 0,
+							"color": -1,
+							"uniform": true,
+							"interpolation": "step",
+							"bezier_linked": true,
+							"bezier_left_time": [
+								-0.1,
+								-0.1,
+								-0.1
+							],
+							"bezier_left_value": [
+								0,
+								0,
+								0
+							],
+							"bezier_right_time": [
+								0.1,
+								0.1,
+								0.1
+							],
+							"bezier_right_value": [
+								0,
+								0,
+								0
+							]
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "2",
+									"y": "2",
+									"z": "2"
+								}
+							],
+							"uuid": "000347b5-67c7-1eaa-6906-1a2967ad5338",
+							"time": 0.5,
+							"color": -1,
+							"uniform": true,
+							"interpolation": "step",
+							"bezier_linked": true,
+							"bezier_left_time": [
+								-0.1,
+								-0.1,
+								-0.1
+							],
+							"bezier_left_value": [
+								0,
+								0,
+								0
+							],
+							"bezier_right_time": [
+								0.1,
+								0.1,
+								0.1
+							],
+							"bezier_right_value": [
+								0,
+								0,
+								0
+							]
+						}
+					]
+				}
+			}
+		}
+	]
+}

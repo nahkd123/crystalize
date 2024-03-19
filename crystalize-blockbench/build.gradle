@@ -1,0 +1,22 @@
+plugins {
+	id 'java-library'
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://libraries.minecraft.net' }
+}
+
+dependencies {
+	implementation project(':crystalize-base')
+	implementation 'com.mojang:datafixerupper:6.0.12'
+	implementation 'org.joml:joml:1.10.5'
+
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}

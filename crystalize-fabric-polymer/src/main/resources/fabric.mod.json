@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "crystalize",
+	"version": "${version}",
+	"name": "Crystalize",
+	"description": "Funny animation thing",
+	"authors": ["nahkd123"],
+	"contact": {
+		"homepage": "https://github.com/nahkd123/crystalize",
+		"sources": "https://github.com/nahkd123/crystalize.git"
+	},
+	"license": "MIT",
+	"icon": "assets/crystalize/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["io.github.nahkd123.crystalize.fabric.debug.CrystalizeDebugInitializer"],
+		"client": []
+	},
+	"mixins": [],
+	"depends": {
+		"fabricloader": ">=0.15.7",
+		"minecraft": "~1.20.4",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

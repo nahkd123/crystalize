@@ -1,0 +1,18 @@
+# Eclipse
+/.settings/
+/.project
+/.classpath
+/*/.settings/
+/*/.project
+/*/.classpath
+
+# Gradle
+/.gradle
+/bin/
+/build/
+/*/.gradle/
+/*/bin/
+/*/build/
+
+# Fabric Loom
+/*/run
