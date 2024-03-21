@@ -15,7 +15,6 @@ import net.minecraft.entity.decoration.Brightness;
 import net.minecraft.util.math.Vec3d;
 
 public class BonePart {
-	private static final Vector3f XZ_NEGATE = new Vector3f(-1, 1, -1);
 	private CrystalizeElementHolder holder;
 	private BonePart parent;
 	private ElementGroup template;
@@ -25,7 +24,7 @@ public class BonePart {
 
 	private final Vector3f boneOrigin = new Vector3f();
 	public final Vector3f boneTranslation = new Vector3f();
-	public final Quaternionf boneRotation = new Quaternionf();
+	public final Vector3f boneRotation = new Vector3f();
 	public final Vector3f boneScale = new Vector3f();
 
 	public BonePart(CrystalizeElementHolder holder, BonePart parent, ElementGroup template, ItemDisplayElement display) {
@@ -56,34 +55,35 @@ public class BonePart {
 	 */
 	public void updateTree(float timeDelta) {
 		if (parent != null) {
-			//
 			boneOrigin.set(parent.boneOrigin).add(parent.boneTranslation);
 			boneTranslation.zero();
 			boneRotation.set(parent.boneRotation);
 			boneScale.set(1, 1, 1).mul(parent.boneScale);
 		} else {
-			//
 			boneOrigin.zero();
 			boneTranslation.zero();
-			boneRotation.identity();
+			boneRotation.zero();
 			boneScale.set(1, 1, 1);
 		}
 
-		boneOrigin.add(template.origin().mul(1f / 16f, new Vector3f()).rotate(boneRotation));
-		boneRotation.rotateXYZ(template.rotation().x(), template.rotation().y(), template.rotation().z());
+		Vector3f offset = new Vector3f(template.origin())
+			.mul(-1f, 1f, -1f)
+			.mul(1f / 16f)
+			.rotate(new Quaternionf().rotateZYX(boneRotation.x, boneRotation.y, boneRotation.z));
+		boneOrigin.add(offset);
+		boneRotation.add(template.rotation());
 
 		// Animations
 		for (AnimationController controller : holder.getAnimationControllers()) {
-			AnimateResult result = controller.animate(timeDelta, this);
-			if (result == AnimateResult.REMOVE_CONTROLLER) holder.stopAnimation(controller);
+			AnimateResult animateResult = controller.animate(timeDelta, this);
+			if (animateResult == AnimateResult.REMOVE_CONTROLLER)
+				holder.stopAnimation(controller);
 		}
 
 		display.setOffset(new Vec3d(boneOrigin));
 		display.setTranslation(boneTranslation);
-		display.setLeftRotation(boneRotation);
-		display.setScale(boneScale.mul(XZ_NEGATE, new Vector3f()));
-		// BIG FIXME!!! Remove the multiplication with (-1, 1, -1) to fix the odd
-		// lightning
+		display.setLeftRotation(new Quaternionf().rotateZYX(boneRotation.x, boneRotation.y, boneRotation.z));
+		display.setScale(boneScale);
 
 		// Copy to debug axes
 		debugAxes.setOffset(display.getOffset());

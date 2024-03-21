@@ -53,8 +53,10 @@ public class DebugCrystalizeModels {
 		ModelsManager manager = CrystalizeFabric.getInstance().getModelsManager();
 
 		try {
+			// @formatter:off
 			manager.registerModel(new Identifier("crystalize", "debug/taterinator"), loadModel("Taterinator.bbmodel"));
-			manager.registerModel(new Identifier("crystalize", "debug/bones_chain"), loadModel("bones_chain.bbmodel"));
+			// TODO add more sample models
+			// @formatter:on
 		} catch (IOException e) {
 			CrystalizeDebugInitializer.LOGGER.warn("Failed to load the potato: {}", e.getMessage());
 		}

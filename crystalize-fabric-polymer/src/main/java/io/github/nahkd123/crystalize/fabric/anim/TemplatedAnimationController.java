@@ -3,8 +3,6 @@ package io.github.nahkd123.crystalize.fabric.anim;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joml.Quaternionf;
-
 import io.github.nahkd123.crystalize.anim.Animation;
 import io.github.nahkd123.crystalize.anim.Animator;
 import io.github.nahkd123.crystalize.fabric.model.BonePart;
@@ -41,8 +39,8 @@ public class TemplatedAnimationController implements AnimationController {
 
 		if (animator != null) {
 			Transformation tf = animator.getAt(last);
-			part.boneTranslation.add(tf.translate());
-			part.boneRotation.mul(new Quaternionf().rotateXYZ(tf.rotate().x(), tf.rotate().y(), tf.rotate().z()));
+			part.boneTranslation.add(tf.translate().x(), tf.translate().y(), -tf.translate().z());
+			part.boneRotation.add(-tf.rotate().z(), tf.rotate().y(), tf.rotate().x());
 			part.boneScale.mul(tf.scale());
 		}
 
