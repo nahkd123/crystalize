@@ -1,19 +1,24 @@
-package io.github.nahkd123.crystalize.fabric.anim;
+package io.github.nahkd123.crystalize.anim.controller;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.Nullable;
-
 import io.github.nahkd123.crystalize.anim.AnimateMode;
 import io.github.nahkd123.crystalize.anim.Animation;
 import io.github.nahkd123.crystalize.anim.Animator;
-import io.github.nahkd123.crystalize.fabric.CrystalizeMod;
-import io.github.nahkd123.crystalize.fabric.model.BonePart;
 import io.github.nahkd123.crystalize.utils.Transformation;
 
-public class TemplatedAnimationController implements AnimationController {
+/**
+ * <p>
+ * Control the bones from predefined animation template.
+ * </p>
+ * 
+ * @see #getMode()
+ * @see HasTimeScale#setTimeScale(float)
+ * @see CanStop#stop()
+ */
+public class TemplatedAnimationController implements AnimationController, HasTimeScale, CanStop {
 	private Animation animation;
 	private AnimateMode mode;
 	private boolean stop = false;
@@ -27,11 +32,11 @@ public class TemplatedAnimationController implements AnimationController {
 	 * </p>
 	 * 
 	 * @param animation    The template.
-	 * @param timeScale    The timescale. Use {@code 1.0} for normal speed.
+	 * @param timeScale    The time scale. Use {@code 1.0} for normal speed.
 	 * @param modeOverride Override the animate mode. Use {@code null} to use
 	 *                     animate mode from {@link Animation#mode()}.
 	 */
-	public TemplatedAnimationController(Animation animation, float timeScale, @Nullable AnimateMode modeOverride) {
+	public TemplatedAnimationController(Animation animation, float timeScale, AnimateMode modeOverride) {
 		Objects.requireNonNull(animation, "animation can't be null");
 		this.animation = animation;
 		this.timeScale = timeScale;
@@ -40,19 +45,7 @@ public class TemplatedAnimationController implements AnimationController {
 	}
 
 	@Override
-	public void animate(BonePart part) {
-		Animator animator = animators.get(part.getTemplate().id());
-
-		if (animator != null) {
-			Transformation tf = animator.getAt(time);
-			part.boneTranslation.add(tf.translate().x(), tf.translate().y(), -tf.translate().z());
-			part.boneRotation.add(-tf.rotate().z(), -tf.rotate().y(), tf.rotate().x());
-			part.boneScale.mul(tf.scale());
-		}
-	}
-
-	@Override
-	public AnimateResult updateTimeRelative(float deltaTime) {
+	public AnimateResult updateTimeRelative(float deltaTime, AnimatableBone root) {
 		time += deltaTime * timeScale;
 
 		if (mode == AnimateMode.Simple.ONE_SHOT) {
@@ -82,19 +75,42 @@ public class TemplatedAnimationController implements AnimationController {
 			return AnimateResult.CONTINUE;
 		}
 
-		CrystalizeMod.LOGGER.warn("Unknown animate mode: {}", mode);
+		// TODO logger
 		return AnimateResult.REMOVE_CONTROLLER;
 	}
 
+	@Override
+	public void animate(AnimatableBone part) {
+		Animator animator = animators.get(part.getAnimatorId());
+
+		if (animator != null) {
+			Transformation tf = animator.getAt(time);
+			part.getTranslation().add(tf.translate().x(), tf.translate().y(), -tf.translate().z());
+			part.getRotation().add(-tf.rotate().z(), -tf.rotate().y(), tf.rotate().x());
+			part.getScale().mul(tf.scale());
+		}
+	}
+
+	/**
+	 * <p>
+	 * Get the current animation mode. See {@link AnimateMode} for more information.
+	 * </p>
+	 * 
+	 * @return The animation mode.
+	 */
+	public AnimateMode getMode() { return mode; }
+
+	@Override
+	public boolean isStopped() { return stop; }
+
+	@Override
 	public void stop() {
 		stop = true;
 	}
 
-	public AnimateMode getMode() { return mode; }
-
-	public boolean isStop() { return stop; }
-
+	@Override
 	public float getTimeScale() { return timeScale; }
 
+	@Override
 	public void setTimeScale(float timeScale) { this.timeScale = timeScale; }
 }

@@ -7,13 +7,14 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
-import io.github.nahkd123.crystalize.fabric.anim.AnimationController;
+import io.github.nahkd123.crystalize.anim.controller.AnimatableBone;
+import io.github.nahkd123.crystalize.anim.controller.AnimationController;
 import io.github.nahkd123.crystalize.fabric.debug.DebugDisplayModels;
 import io.github.nahkd123.crystalize.model.ElementGroup;
 import net.minecraft.entity.decoration.Brightness;
 import net.minecraft.util.math.Vec3d;
 
-public class BonePart {
+public class BonePart implements AnimatableBone {
 	private CrystalizeElementHolder holder;
 	private BonePart parent;
 	private ElementGroup template;
@@ -44,7 +45,20 @@ public class BonePart {
 
 	public ItemDisplayElement getDebugAxes() { return debugAxes; }
 
+	@Override
 	public List<BonePart> getChildren() { return children; }
+
+	@Override
+	public String getAnimatorId() { return template.id(); }
+
+	@Override
+	public Vector3f getTranslation() { return boneTranslation; }
+
+	@Override
+	public Vector3f getRotation() { return boneRotation; }
+
+	@Override
+	public Vector3f getScale() { return boneScale; }
 
 	/**
 	 * <p>

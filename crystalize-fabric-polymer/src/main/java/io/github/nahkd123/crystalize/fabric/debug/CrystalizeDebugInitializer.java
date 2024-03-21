@@ -14,8 +14,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import eu.pb4.polymer.virtualentity.api.attachment.BlockBoundAttachment;
 import eu.pb4.polymer.virtualentity.api.attachment.HolderAttachment;
+import io.github.nahkd123.crystalize.anim.controller.TemplatedAnimationController;
 import io.github.nahkd123.crystalize.fabric.CrystalizeFabric;
-import io.github.nahkd123.crystalize.fabric.anim.TemplatedAnimationController;
 import io.github.nahkd123.crystalize.fabric.model.CrystalizeElementHolder;
 import io.github.nahkd123.crystalize.fabric.model.RegisteredModel;
 import net.fabricmc.api.ModInitializer;

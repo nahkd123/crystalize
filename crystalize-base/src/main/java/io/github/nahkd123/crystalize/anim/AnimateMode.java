@@ -1,6 +1,24 @@
 package io.github.nahkd123.crystalize.anim;
 
+/**
+ * <p>
+ * The animate mode. There are 3 different modes: 2 of which is defined in
+ * {@link Simple}, and a {@link Looping} mode for looping the animation between
+ * 2 looping points.
+ * </p>
+ * 
+ * @see Simple
+ * @see Looping
+ */
 public interface AnimateMode {
+	/**
+	 * <p>
+	 * Simple animate mode. No need to specify additional parameters.
+	 * </p>
+	 * 
+	 * @see #ONE_SHOT
+	 * @see #HOLD_LAST
+	 */
 	public static enum Simple implements AnimateMode {
 		/**
 		 * <p>
