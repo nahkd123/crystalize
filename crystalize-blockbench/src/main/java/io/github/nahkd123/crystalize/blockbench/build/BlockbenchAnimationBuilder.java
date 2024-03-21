@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.joml.Vector3f;
 
+import io.github.nahkd123.crystalize.anim.AnimateMode;
 import io.github.nahkd123.crystalize.anim.Animation;
 import io.github.nahkd123.crystalize.anim.Animator;
 import io.github.nahkd123.crystalize.anim.Channel;
@@ -28,12 +29,15 @@ public class BlockbenchAnimationBuilder {
 	private static final Vector3f ONE = new Vector3f(1, 1, 1);
 
 	public static Animation buildAnimation(BbAnimation source) {
-		boolean loop = source.loopMode() == LoopMode.LOOP;
+		AnimateMode mode = source.loopMode() == LoopMode.ONCE
+			? AnimateMode.Simple.ONE_SHOT
+			: source.loopMode() == LoopMode.HOLD ? AnimateMode.Simple.HOLD_LAST
+			: new AnimateMode.Looping(0, source.length(), false);
 		double duration = source.length();
 		List<Animator> animators = new ArrayList<>();
 		for (Map.Entry<UUID, BbAnimator> e : source.animators().entrySet())
 			animators.add(buildAnimator(e.getKey(), e.getValue()));
-		return new Animation(source.name(), loop, duration, animators);
+		return new Animation(source.name(), mode, duration, animators);
 	}
 
 	public static Animator buildAnimator(UUID target, BbAnimator source) {

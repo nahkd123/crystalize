@@ -58,7 +58,7 @@ public class CrystalizeDebugInitializer implements ModInitializer {
 				model.template().animations().stream()
 					.filter(a -> a.id().equals("animation.walking"))
 					.findFirst()
-					.ifPresent(a -> holder.playAnimation(new TemplatedAnimationController(a, 1f, true)));
+					.ifPresent(a -> holder.addAnimation(new TemplatedAnimationController(a, 1f, null)));
 
 				ctx.getSource().sendFeedback(() -> Text.literal("Placed model at " + pos), true);
 				return 1;

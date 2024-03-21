@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.joml.Vector3f;
+
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
+import io.github.nahkd123.crystalize.fabric.anim.AnimateResult;
 import io.github.nahkd123.crystalize.fabric.anim.AnimationController;
 import io.github.nahkd123.crystalize.model.Element;
 import io.github.nahkd123.crystalize.model.ElementGroup;
@@ -18,13 +21,17 @@ public class CrystalizeElementHolder extends ElementHolder {
 	private BonePart root;
 	private Set<AnimationController> animationControllers = new HashSet<>();
 	private Set<AnimationController> pendingRemoval = new HashSet<>();
-	private boolean updatingTree = false;
+	private boolean updatingAnimations = false;
 	private long lastNano;
+
+	public final Vector3f modelTranslation = new Vector3f();
+	public final Vector3f modelRotation = new Vector3f();
+	// TODO model scale here?
 
 	public CrystalizeElementHolder(RegisteredModel base) {
 		this.base = base;
 		this.root = createBone(getTemplate().root(), null);
-		this.root.updateTree(0f);
+		this.root.updateTree();
 		this.lastNano = System.nanoTime();
 	}
 
@@ -40,12 +47,12 @@ public class CrystalizeElementHolder extends ElementHolder {
 		return Collections.unmodifiableCollection(animationControllers);
 	}
 
-	public void playAnimation(AnimationController controller) {
+	public void addAnimation(AnimationController controller) {
 		animationControllers.add(controller);
 	}
 
-	public void stopAnimation(AnimationController controller) {
-		if (updatingTree) pendingRemoval.add(controller);
+	public void removeAnimation(AnimationController controller) {
+		if (updatingAnimations) pendingRemoval.add(controller);
 		else animationControllers.remove(controller);
 	}
 
@@ -65,15 +72,30 @@ public class CrystalizeElementHolder extends ElementHolder {
 		return part;
 	}
 
+	protected void updateAnimations(float deltaTime) {
+		if (updatingAnimations) return;
+		updatingAnimations = true;
+
+		try {
+			animationControllers.forEach(controller -> {
+				AnimateResult result = controller.updateTimeRelative(deltaTime);
+
+				switch (result) {
+				case REMOVE_CONTROLLER -> removeAnimation(controller);
+				default -> {}
+				}
+			});
+		} finally {
+			updatingAnimations = false;
+			pendingRemoval.forEach(animationControllers::remove);
+			pendingRemoval.clear();
+		}
+	}
+
 	@Override
 	protected void onTick() {
-		updatingTree = true;
-		long now = System.nanoTime();
-		root.updateTree((float) ((now - lastNano) / 1_000_000000d));
-		lastNano = now;
-		updatingTree = false;
-
-		pendingRemoval.forEach(animationControllers::remove);
-		pendingRemoval.clear();
+		updateAnimations((float) ((System.nanoTime() - lastNano) / 1_000_000000d));
+		lastNano = System.nanoTime();
+		root.updateTree();
 	}
 }
