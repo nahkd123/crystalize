@@ -90,19 +90,38 @@ public class BonePart implements AnimatableBone {
 		boneRotation.add(template.rotation());
 		for (AnimationController controller : holder.getAnimationControllers()) controller.animate(this);
 
-		// @formatter:off
-		// display.setOffset(new Vec3d(boneOrigin));
-		display.setOffset(new Vec3d(0, 0, 0));
-		display.setTranslation(new Vector3f(boneOrigin)
+		Quaternionf modelRot = new Quaternionf()
+			.rotateZYX(holder.modelRotation.x, holder.modelRotation.y, holder.modelRotation.z);
+		Vector3f computedTranslate = new Vector3f(boneOrigin)
 			.add(boneTranslation)
-			.rotate(new Quaternionf().rotateZYX(holder.modelRotation.x, holder.modelRotation.y, holder.modelRotation.z))
-			.add(holder.modelTranslation));
+			.rotate(modelRot)
+			.add(holder.modelTranslation);
+
+		switch (holder.getTranslateStrategy()) {
+		case POSITION_ONLY:
+			display.setOffset(Vec3d.ZERO);
+			display.setTranslation(computedTranslate);
+			display.setStartInterpolation(0);
+			display.setInterpolationDuration(0);
+			break;
+		case TRANSLATION_ONLY:
+			display.setOffset(Vec3d.ZERO);
+			display.setTranslation(computedTranslate);
+			display.setStartInterpolation(0);
+			display.setInterpolationDuration(1);
+			break;
+		case MIXED:
+		default:
+			display.setOffset(new Vec3d(new Vector3f(boneOrigin).rotate(modelRot).add(holder.modelTranslation)));
+			display.setTranslation(new Vector3f(boneTranslation).rotate(modelRot));
+			display.setStartInterpolation(0);
+			display.setInterpolationDuration(1);
+			break;
+		}
+
 		display.setRightRotation(new Quaternionf().rotateZYX(boneRotation.x, boneRotation.y, boneRotation.z));
-		display.setLeftRotation(new Quaternionf().rotateZYX(holder.modelRotation.x, holder.modelRotation.y, holder.modelRotation.z));
+		display.setLeftRotation(modelRot);
 		display.setScale(boneScale);
-		display.setStartInterpolation(0);
-		display.setInterpolationDuration(1);
-		// @formatter:on
 
 		// Copy to debug axes
 		debugAxes.setOffset(display.getOffset());

@@ -18,21 +18,30 @@ import net.minecraft.util.Identifier;
 
 public class CrystalizeElementHolder extends ElementHolder {
 	private RegisteredModel base;
+	private TranslateStrategy translateStrategy;
 	private BonePart root;
+
+	// Animation
+	private long lastNano;
 	private Set<AnimationController> animationControllers = new HashSet<>();
 	private Set<AnimationController> pendingRemoval = new HashSet<>();
 	private boolean updatingAnimations = false;
-	private long lastNano;
 
+	// Transform
 	public final Vector3f modelTranslation = new Vector3f();
 	public final Vector3f modelRotation = new Vector3f();
 	// TODO model scale here?
 
-	public CrystalizeElementHolder(RegisteredModel base) {
+	public CrystalizeElementHolder(RegisteredModel base, TranslateStrategy translateStrategy) {
 		this.base = base;
+		this.translateStrategy = translateStrategy != null ? translateStrategy : TranslateStrategy.MIXED;
 		this.root = createBone(getTemplate().root(), null);
 		this.root.updateTree();
 		this.lastNano = System.nanoTime();
+	}
+
+	public CrystalizeElementHolder(RegisteredModel base) {
+		this(base, TranslateStrategy.MIXED);
 	}
 
 	public RegisteredModel getBase() { return base; }
@@ -42,6 +51,12 @@ public class CrystalizeElementHolder extends ElementHolder {
 	public Model getTemplate() { return base.template(); }
 
 	public BonePart getRoot() { return root; }
+
+	public TranslateStrategy getTranslateStrategy() { return translateStrategy; }
+
+	public void setTranslateStrategy(TranslateStrategy translateStrategy) {
+		this.translateStrategy = translateStrategy != null ? translateStrategy : TranslateStrategy.MIXED;
+	}
 
 	public Collection<AnimationController> getAnimationControllers() {
 		return Collections.unmodifiableCollection(animationControllers);
