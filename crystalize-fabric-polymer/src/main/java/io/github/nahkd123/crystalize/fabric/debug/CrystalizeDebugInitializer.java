@@ -20,6 +20,7 @@ import io.github.nahkd123.crystalize.fabric.model.CrystalizeElementHolder;
 import io.github.nahkd123.crystalize.fabric.model.RegisteredModel;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
@@ -32,12 +33,16 @@ public class CrystalizeDebugInitializer implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		DebugDisplayModels.initializeModels();
-		DebugCrystalizeModels.initializeModels();
+		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+			LOGGER.info("Detected development environment. Initializing...");
 
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			dispatcher.register(literal("crystalize").then(placeCommand()));
-		});
+			DebugDisplayModels.initializeModels();
+			DebugCrystalizeModels.initializeModels();
+
+			CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+				dispatcher.register(literal("crystalize").then(placeCommand()));
+			});
+		}
 	}
 
 	private LiteralArgumentBuilder<ServerCommandSource> placeCommand() {
