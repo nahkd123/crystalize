@@ -105,7 +105,9 @@ public class ModelsManagerImpl implements ModelsManager {
 	}
 
 	@Override
-	public Map<Identifier, Model> getRegisteredModels() { return Collections.unmodifiableMap(templates); }
+	public Map<Identifier, RegisteredModelImpl> getRegisteredModels() {
+		return Collections.unmodifiableMap(registered);
+	}
 
 	@Override
 	public RegisteredModel getModel(Identifier id) {

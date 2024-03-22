@@ -1,0 +1,66 @@
+# Crystalize by nahkd123
+#
+# Source Code:     https://github.com/nahkd123/crystalize
+# Issues Tracker:  https://github.com/nahkd123/crystalize/issues
+# Make a donation: https://github.com/sponsors/nahkd123
+# License:         MIT license
+#
+# About Crystalize
+# Crystalize is an API (Fabric library mod and Bukkit API plugin) that enables
+# you to load Blockbench models directly to the game, without requiring yout
+# players to install mods. Crystalize uses Display entities feature from modern
+# Minecraft version to acheive this (I previously tried to use armor stand, but
+# that didn't work well).
+
+# Resource pack configuration
+# Crystalize provides API for adding custom resource pack builder, which allow
+# you to use other plugins that also requires custom resource pack.
+#
+# A note on "crystalize:default":
+# Default resource pack builder for Crystalize does not have support for any
+# plugin (other than Crystalize, obviously). To use Crystalize with your
+# favorite plugin like "ItemsAdder", you might need to do extra work. Consider
+# looking up wiki for your plugin to learn more (hint: look for "pack merging")
+pack:
+  # Skip the pack building entirely
+  ignore: false
+
+  # Preferred resource pack builder
+  # If the preferred builder does not exists, Crystalize will select the
+  # default builder, which is "crystalize:default"
+  preferredBuilder: "crystalize:default"
+
+  # Automatically copy built resource pack to destination
+  # Available placeholders:
+  #   {minecraftClientHome}: Point to ".minecraft" folder
+  #     On Linux: ~/.minecraft
+  #     On Windows: %appdata%/.minecraft
+  #     MacOS is not supported as I don't have a Mac to test.
+  autoCopy:
+    enable: false
+    copyTo: "{minecraftClientHome}/resourcepacks/crystalize.zip"
+
+# Model configuration
+model:
+  # Translation Strategy (not to be confused with "text translation")
+  # Define default translation strategy. Other plugins may override this.
+  # - "translationOnly": Keep all display entities at model's origin, enable
+  #   interpolation for all bones but will not render your model partially when
+  #   model's origin is not in visible area. Suitable for small models.
+  # - "positionOnly": Disable interpolation (cause choppy animations), but
+  #   teleport the parts around. Your model will be partially rendered when
+  #   part's origin is in visible are, rather than model's origin. Suitable for
+  #   models with large amount of parts, like big Chinese dragon for example.
+  # - "mixed": A combination of "translation_only" and "position_only": Enable
+  #   interpolation; teleport the part as well as translating the part with
+  #   model transformation. Suitable for model with decent amount of parts.
+  translateStrategy: "mixed"
+
+  # Ticking Strategy
+  # Define ticking strategy. Applies to all models.
+  # This may affect the model animation.
+  # - "nearbyPlayer": Only tick when there is at least 1 player within the
+  #   model radius.
+  tickingStrategy:
+    type: "nearbyPlayer"
+    radius: 100

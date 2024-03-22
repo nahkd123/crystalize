@@ -1,0 +1,31 @@
+name: Crystalize
+author: [nahkd123]
+license: MIT
+version: 1.0.0
+description: "Crystalize model animations engine for Bukkit"
+
+api-version: 1.20
+main: io.github.nahkd123.crystalize.bukkit.CrystalizePlugin
+
+commands:
+  crystalize:
+    usage: /crystalize
+    permission: crystalize.command.general
+
+permissions:
+  crystalize.command.*:
+    description: Wildcard command. Should only be granted to administrators.
+    default: op
+    children:
+      crystalize.command.general: true
+      crystalize.command.list: true
+      crystalize.command.about: true
+  crystalize.command.general:
+    description: Access to the main command.
+    default: false
+  crystalize.command.list:
+    description: View the list of all models.
+    default: false
+  crystalize.command.about:
+    description: View information about Crystalize.
+    default: false

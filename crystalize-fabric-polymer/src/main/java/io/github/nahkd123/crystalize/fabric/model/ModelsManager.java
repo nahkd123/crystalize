@@ -18,7 +18,7 @@ public interface ModelsManager {
 	 */
 	public RegisteredModel registerModel(Identifier id, Model template);
 
-	public Map<Identifier, Model> getRegisteredModels();
+	public Map<Identifier, ? extends RegisteredModel> getRegisteredModels();
 
 	public RegisteredModel getModel(Identifier id);
 }

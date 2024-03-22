@@ -17,15 +17,17 @@ repositories {
 }
 
 dependencies {
+	// Minecraft and Fabric
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Crystalize API and tooling
-	implementation include(project(':crystalize-base'))
-	implementation include(project(':crystalize-blockbench'))
-	implementation include(project(':crystalize-minecraft-model'))
+	api include(project(':crystalize-base'))
+	api include(project(':crystalize-blockbench'))
+	api include(project(':crystalize-minecraft-model'))
 
+	// Dependency mods
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation include("maven.modrinth:nylon:${project.nylon_version}")
 	modImplementation include("eu.pb4:polymer-core:${project.polymer_version}")
@@ -33,6 +35,7 @@ dependencies {
 	modImplementation include("eu.pb4:polymer-resource-pack:${project.polymer_version}")
 	modImplementation include("eu.pb4:polymer-virtual-entity:${project.polymer_version}")
 
+	// Autohost so I don't have to copy resource pack
 	modRuntimeOnly "eu.pb4:polymer-autohost:${project.polymer_version}"
 }
 

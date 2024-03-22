@@ -16,4 +16,6 @@ plugins {
 include 'crystalize-base'
 include 'crystalize-blockbench'
 include 'crystalize-minecraft-model'
+
 include 'crystalize-fabric-polymer'
+include 'crystalize-bukkit'
