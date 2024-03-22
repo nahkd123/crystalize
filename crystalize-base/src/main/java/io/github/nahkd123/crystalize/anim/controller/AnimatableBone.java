@@ -49,9 +49,8 @@ public interface AnimatableBone {
 
 	/**
 	 * <p>
-	 * The relative rotation of this bone. The bone rotates around its origin, which
-	 * is calculated by adding the bone origin with translations from all animation
-	 * controllers.
+	 * The relative rotation of this bone. The bone rotates around its origin plus
+	 * bone translations from all animation controllers and itself.
 	 * </p>
 	 * <p>
 	 * The angles are in radians, and the rotation is Euler angles in {@code ZYX}
@@ -72,4 +71,25 @@ public interface AnimatableBone {
 	 * @return The bone scale.
 	 */
 	public Vector3f getScale();
+
+	/**
+	 * <p>
+	 * Lookup a bone in the tree. This will traverse through all children.
+	 * </p>
+	 * 
+	 * @param id The ID of the bone.
+	 * @return The child animatable bone, or {@code null} if such child doesn't
+	 *         exists.
+	 */
+	default AnimatableBone lookup(String id) {
+		if (id.equals(getAnimatorId())) return this;
+
+		for (AnimatableBone child : getChildren()) {
+			if (child.getAnimatorId().equals(id)) return child;
+			AnimatableBone childLookup = child.lookup(id);
+			if (childLookup != null) return childLookup;
+		}
+
+		return null;
+	}
 }
