@@ -99,8 +99,8 @@ public class BonePart implements AnimatableBone {
 
 		switch (holder.getTranslateStrategy()) {
 		case POSITION_ONLY:
-			display.setOffset(Vec3d.ZERO);
-			display.setTranslation(computedTranslate);
+			display.setOffset(new Vec3d(computedTranslate));
+			display.setTranslation(new Vector3f(0, 0, 0));
 			display.setStartInterpolation(0);
 			display.setInterpolationDuration(0);
 			break;
