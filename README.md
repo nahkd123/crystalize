@@ -3,17 +3,17 @@ _I've reimplemented [Nylon](https://modrinth.com/mod/nylon), but at what cost?_
 
 Crystalize uses display entities to display models from Blockbench (non-cube meshes are not supported, obviously) on your Minecraft server. Simply drag and drop Blockbench model to your mod, use `ModelsManager.registerModel()` and you are ready to go! Sounds simple but I wasted more than 40 hours of my life just to cook this library mod (and it's not even finished yet).
 
-<center>
+<p align="center">
 <img src="./docs/froggo.gif">
 <br>
 Custom model animation completely client-side!
-</center>
+</p>
 
-<center>
+<p align="center">
 <img src="./docs/vanillaclient.png">
 <br>
 Compatible with vanilla clients!
-</center>
+</p>
 
 ## "Why are you... reimplementing Nylon?"
 0. I need more flexibility (animation timescale, replacing part models, etc...).
@@ -45,11 +45,11 @@ Inverse Kinematics (IK) is a magical way of animating your model. Instead of har
 - [ ] Rotating the bones
 - [ ] Add rotation constraints support.
 
-<center>
+<p align="center">
 <img src="./docs/ik.gif">
 <br>
 Inverse Kinematics (position only). The bones point towards a point in invisible sphere.
-</center>
+</p>
 
 ## License
 The Crystalize and its components' code are licensed under MIT license.
