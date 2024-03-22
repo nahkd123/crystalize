@@ -36,6 +36,8 @@ public interface AnimatableBone {
 	 */
 	public Collection<? extends AnimatableBone> getChildren();
 
+	public Vector3f getOrigin();
+
 	/**
 	 * <p>
 	 * The translation (as known as offset or relative position to parent) of the
@@ -91,5 +93,9 @@ public interface AnimatableBone {
 		}
 
 		return null;
+	}
+
+	default AnimatableBone lookupChild(String id) {
+		return getChildren().stream().filter(v -> v.getAnimatorId().equals(id)).findAny().orElse(null);
 	}
 }

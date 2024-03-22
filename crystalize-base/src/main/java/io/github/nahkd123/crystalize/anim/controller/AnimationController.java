@@ -28,6 +28,10 @@ public interface AnimationController {
 	 * will be called by model implementation <i>once</i> every animation tick
 	 * (usually matches with server tick).
 	 * </p>
+	 * <p>
+	 * Default implementation is to return {@link AnimateResult#CONTINUE}, which
+	 * keeps the controller running.
+	 * </p>
 	 * 
 	 * @param deltaTime The time offset to advance this animation controller.
 	 *                  Positive values will advance forward; negative values will
@@ -44,15 +48,17 @@ public interface AnimationController {
 	 *           method. If needed, you can store the bone in the controller's field
 	 *           and let {@link #animate(AnimatableBone)} handle it.
 	 */
-	public AnimateResult updateTimeRelative(float deltaTime, AnimatableBone root);
+	default AnimateResult updateTimeRelative(float deltaTime, AnimatableBone root) {
+		return AnimateResult.CONTINUE;
+	}
 
 	/**
 	 * <p>
 	 * Apply the animation. This will be called by model implementation for all
-	 * individual bones.
+	 * individual bones in animation tick.
 	 * </p>
 	 * 
 	 * @param part The bone, which you can use to apply animation.
 	 */
-	public void animate(AnimatableBone part);
+	default void animate(AnimatableBone part) {}
 }

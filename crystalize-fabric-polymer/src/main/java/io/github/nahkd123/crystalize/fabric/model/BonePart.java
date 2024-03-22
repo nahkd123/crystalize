@@ -52,6 +52,9 @@ public class BonePart implements AnimatableBone {
 	public String getAnimatorId() { return template.id(); }
 
 	@Override
+	public Vector3f getOrigin() { return boneOrigin; }
+
+	@Override
 	public Vector3f getTranslation() { return boneTranslation; }
 
 	@Override
