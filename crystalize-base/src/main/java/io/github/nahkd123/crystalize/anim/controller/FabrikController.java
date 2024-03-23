@@ -34,6 +34,7 @@ public class FabrikController implements AnimationController {
 	private float time = 0f;
 
 	private Map<AnimatableBone, Vector3f> nextOrigins = new HashMap<>();
+	private Map<AnimatableBone, Vector3f> nextRotations = new HashMap<>();
 
 	/**
 	 * <p>
@@ -130,9 +131,9 @@ public class FabrikController implements AnimationController {
 	@Override
 	public AnimateResult updateTimeRelative(float deltaTime, AnimatableBone root) {
 		time += deltaTime;
-		target.x = (float) Math.sin(time * 1f) * 0.5f;
-		target.y = (float) Math.cos(time * 2f) * 0.5f;
-		target.z = (float) Math.cos(time * 3f) * 0.5f;
+		target.x = (float) Math.sin(time * 1.0f) * 0.5f;
+		target.y = (float) Math.sin(time * 2.0f) * 0.5f;
+		target.z = (float) Math.sin(time * 3.0f) * 0.5f;
 		applyIk(root);
 		return AnimateResult.CONTINUE;
 	}
@@ -211,13 +212,43 @@ public class FabrikController implements AnimationController {
 				dif = origins[origins.length - 1].distance(target);
 			}
 		}
+
+		// We now have all the joints' position, it's time to compute the rotations. We
+		// only want to apply rotations to bones.
+		Vector3f forward = new Vector3f();
+
+		for (int i = 0; i < origins.length - 1; i++) {
+			// Calculate direction vector
+			origins[i + 1].sub(origins[i], forward).normalize();
+
+			// Calculate Euler angles
+			boolean downward = forward.y < 0;
+			float x = forward.x;
+			float y = forward.z;
+			float z = Math.abs(forward.y);
+
+			float yaw = (float) Math.atan2(y, x);
+			float pitch = downward
+				? (float) (Math.PI - Math.acos(z))
+				: (float) Math.acos(z);
+
+			// Compute euler angles
+			Vector3f boneRot = nextRotations.compute(branch.get(i), (k, vec) -> vec == null ? new Vector3f() : vec);
+			boneRot.x = 0.0f;
+			boneRot.y = pitch;
+			boneRot.z = yaw;
+		}
 	}
 
 	@Override
 	public void animate(AnimatableBone part) {
 		if (chainIds.size() < 2) return;
-		Vector3f v = nextOrigins.get(part);
-		if (v != null) part.getOrigin().set(v);
-		// TODO rotation
+		Vector3f nextRotation = nextRotations.get(part);
+
+		if (nextRotation != null) {
+			part.getRotation().x = nextRotation.x;
+			part.getRotation().y = nextRotation.z;
+			part.getRotation().z = nextRotation.y;
+		}
 	}
 }
