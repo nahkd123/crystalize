@@ -113,4 +113,9 @@ public class TemplatedAnimationController implements AnimationController, HasTim
 
 	@Override
 	public void setTimeScale(float timeScale) { this.timeScale = timeScale; }
+
+	@Override
+	public String toString() {
+		return "TemplatedAnimationController[" + animation.id() + ", " + mode + "]";
+	}
 }

@@ -2,9 +2,20 @@ package io.github.nahkd123.crystalize.fabric.model;
 
 import java.util.Map;
 
+import io.github.nahkd123.crystalize.fabric.CrystalizeFabric;
 import io.github.nahkd123.crystalize.model.Model;
 import net.minecraft.util.Identifier;
 
+/**
+ * <p>
+ * Models manager allows you to register Crystalize model, or get existing
+ * registered model.
+ * </p>
+ * 
+ * @see CrystalizeFabric#getModelsManager()
+ * @see #registerModel(Identifier, Model)
+ * @see #getModel(Identifier)
+ */
 public interface ModelsManager {
 	/**
 	 * <p>

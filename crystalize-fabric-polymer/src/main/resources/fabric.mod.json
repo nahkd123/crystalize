@@ -13,7 +13,7 @@
 	"icon": "assets/crystalize/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["io.github.nahkd123.crystalize.fabric.debug.CrystalizeDebugInitializer"],
+		"main": ["io.github.nahkd123.crystalize.fabric.CrystalizeMod"],
 		"client": []
 	},
 	"mixins": [],

@@ -243,4 +243,9 @@ public class FabrikController implements AnimationController {
 			part.getRotation().z = nextRotation.y;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "FabrikController[" + target + "]";
+	}
 }

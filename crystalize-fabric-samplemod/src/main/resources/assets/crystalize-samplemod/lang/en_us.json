@@ -1,0 +1,8 @@
+{
+	"crystalize.command.unknownModelId": "Unknown model ID: %s",
+	"crystalize.command.placedModel": "Placed model as %4$s at %1$s %2$s %3$s",
+	"crystalize.command.addedAnimation": "Added animation %3$s from template %2$s to %1$s",
+	"crystalize.command.inspect": "Inspecting %s (Model: %s):",
+	"crystalize.command.inspectAnimation": "#%s: Animation Controller: %s",
+	"crystalize.command.inspectEnd": "--- END ---"
+}
