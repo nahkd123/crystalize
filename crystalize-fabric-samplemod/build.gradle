@@ -13,7 +13,10 @@ dependencies {
 	mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
 
-	// Crystalize API and tooling
+	// Crystalize
+	implementation project(path: ':crystalize-fabric-polymer', configuration: 'namedElements')
+
+	// I have to manually add the following dependencies. Oh well...
 	api project(':crystalize-base')
 	api project(':crystalize-blockbench')
 	api project(':crystalize-minecraft-model')
@@ -24,6 +27,9 @@ dependencies {
 	modImplementation "eu.pb4:polymer-networking:${rootProject.polymer_version}"
 	modImplementation "eu.pb4:polymer-resource-pack:${rootProject.polymer_version}"
 	modImplementation "eu.pb4:polymer-virtual-entity:${rootProject.polymer_version}"
+
+	// Autohost so I don't have to copy resource pack
+	modRuntimeOnly "eu.pb4:polymer-autohost:${rootProject.polymer_version}"
 }
 
 processResources {

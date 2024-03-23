@@ -1,5 +1,4 @@
 plugins {
-	id 'java-library'
 	id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
@@ -11,8 +10,8 @@ repositories {
 
 dependencies {
 	// Spigot API and existing Minecraft libraries
-	compileOnly 'org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT'
-	compileOnly 'com.mojang:datafixerupper:6.0.8'
+	compileOnly "org.spigotmc:spigot-api:${rootProject.minecraft_version}-R0.1-SNAPSHOT"
+	implementation "com.mojang:datafixerupper:${rootProject.datafixerupper_version}"
 
 	// Crystalize API and tooling
 	api project(':crystalize-base')
@@ -25,11 +24,5 @@ shadowJar {
 		include project(':crystalize-base')
 		include project(':crystalize-blockbench')
 		include project(':crystalize-minecraft-model')
-	}
-}
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
 	}
 }

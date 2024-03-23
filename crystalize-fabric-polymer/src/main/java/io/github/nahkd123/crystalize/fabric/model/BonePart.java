@@ -9,9 +9,7 @@ import org.joml.Vector3f;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
 import io.github.nahkd123.crystalize.anim.controller.AnimatableBone;
 import io.github.nahkd123.crystalize.anim.controller.AnimationController;
-import io.github.nahkd123.crystalize.fabric.debug.DebugDisplayModels;
 import io.github.nahkd123.crystalize.model.ElementGroup;
-import net.minecraft.entity.decoration.Brightness;
 import net.minecraft.util.math.Vec3d;
 
 public class BonePart implements AnimatableBone {
@@ -19,7 +17,6 @@ public class BonePart implements AnimatableBone {
 	private BonePart parent;
 	private ElementGroup template;
 	private ItemDisplayElement display;
-	private ItemDisplayElement debugAxes;
 	private List<BonePart> children = new ArrayList<>();
 
 	private final Vector3f boneOrigin = new Vector3f();
@@ -32,7 +29,6 @@ public class BonePart implements AnimatableBone {
 		this.parent = parent;
 		this.template = template;
 		this.display = display;
-		this.debugAxes = new ItemDisplayElement(DebugDisplayModels.getAxesModel());
 	}
 
 	public CrystalizeElementHolder getHolder() { return holder; }
@@ -43,8 +39,6 @@ public class BonePart implements AnimatableBone {
 	public ElementGroup getTemplate() { return template; }
 
 	public ItemDisplayElement getDisplay() { return display; }
-
-	public ItemDisplayElement getDebugAxes() { return debugAxes; }
 
 	@Override
 	public List<BonePart> getChildren() { return children; }
@@ -126,15 +120,6 @@ public class BonePart implements AnimatableBone {
 		display.setRightRotation(new Quaternionf().rotateZYX(boneRotation.x, boneRotation.y, boneRotation.z));
 		display.setLeftRotation(modelRot);
 		display.setScale(boneScale);
-
-		// Copy to debug axes
-		debugAxes.setOffset(display.getOffset());
-		debugAxes.setTranslation(display.getTranslation());
-		debugAxes.setLeftRotation(display.getLeftRotation());
-		debugAxes.setRightRotation(display.getRightRotation());
-		debugAxes.setScale(display.getScale().mul(0.1f, new Vector3f()));
-		debugAxes.setBrightness(new Brightness(15, 15));
-		holder.removeElement(debugAxes);
 
 		for (BonePart child : children) child.updateTree();
 	}

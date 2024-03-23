@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "crystalize-samplemod",
+	"version": "${version}",
+	"name": "Crystalize Sample Mod",
+	"description": "Crystalize for Fabric API demostration",
+	"authors": ["nahkd123"],
+	"contact": {
+		"homepage": "https://github.com/nahkd123/crystalize",
+		"sources": "https://github.com/nahkd123/crystalize.git"
+	},
+	"license": "MIT",
+	"icon": "assets/crystalize_samplemod/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [],
+		"client": []
+	},
+	"mixins": [],
+	"depends": {
+		"fabricloader": ">=0.15.7",
+		"minecraft": "~1.20.4",
+		"java": ">=17",
+		"fabric-api": "*",
+		"crystalize": "*"
+	}
+}

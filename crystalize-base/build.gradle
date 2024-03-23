@@ -1,19 +1,9 @@
-plugins {
-	id 'java-library'
-}
-
 repositories {
 	mavenCentral()
 	maven { url 'https://libraries.minecraft.net' }
 }
 
 dependencies {
-	implementation 'com.mojang:datafixerupper:6.0.8'
-	implementation 'org.joml:joml:1.10.5'
-}
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+	implementation "com.mojang:datafixerupper:${rootProject.datafixerupper_version}"
+	implementation "org.joml:joml:${rootProject.joml_version}"
 }

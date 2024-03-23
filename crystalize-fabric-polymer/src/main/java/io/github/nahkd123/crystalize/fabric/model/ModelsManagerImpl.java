@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import com.google.gson.Gson;
 
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
-import io.github.nahkd123.crystalize.fabric.debug.CrystalizeDebugInitializer;
+import io.github.nahkd123.crystalize.fabric.CrystalizeMod;
 import io.github.nahkd123.crystalize.fabric.utils.ResourceWrapper;
 import io.github.nahkd123.crystalize.minecraft.atlas.SpriteSingleSource;
 import io.github.nahkd123.crystalize.minecraft.atlas.TextureAtlas;
@@ -37,7 +37,7 @@ public class ModelsManagerImpl implements ModelsManager {
 				buildTexturesAndModels(wrapper, info);
 
 				if (FabricLoader.getInstance().isDevelopmentEnvironment())
-					CrystalizeDebugInitializer.LOGGER.info("Generated textures and models for {}", info.id());
+					CrystalizeMod.LOGGER.info("Generated textures and models for {}", info.id());
 			}
 		});
 	}
@@ -90,7 +90,7 @@ public class ModelsManagerImpl implements ModelsManager {
 		registerFragment(template.root(), id);
 
 		if (FabricLoader.getInstance().isDevelopmentEnvironment())
-			CrystalizeDebugInitializer.LOGGER.info("Registered model: {}", id);
+			CrystalizeMod.LOGGER.info("Registered model: {}", id);
 		return registeredVariant;
 	}
 

@@ -83,7 +83,6 @@ public class CrystalizeElementHolder extends ElementHolder {
 		}
 
 		addElement(display);
-		addElement(part.getDebugAxes());
 		return part;
 	}
 

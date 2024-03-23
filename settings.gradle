@@ -18,4 +18,5 @@ include 'crystalize-blockbench'
 include 'crystalize-minecraft-model'
 
 include 'crystalize-fabric-polymer'
+include 'crystalize-fabric-samplemod'
 include 'crystalize-bukkit'

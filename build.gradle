@@ -1,0 +1,37 @@
+plugins {
+	id 'java-library'
+	id 'maven-publish'
+}
+
+subprojects {
+	apply plugin: 'java-library'
+	apply plugin: 'maven-publish'
+
+	group = rootProject.crystalize_groupId
+	version = rootProject.crystalize_version
+
+	java {
+		withSourcesJar()
+
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(17)
+		}
+	}
+
+	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+				groupId = rootProject.crystalize_groupId
+				artifactId = project.name
+				version = rootProject.crystalize_version
+				from components.java
+			}
+		}
+
+		repositories {
+			mavenLocal()
+		}
+	}
+}
+
+print("Crystalize v${rootProject.crystalize_version}")
