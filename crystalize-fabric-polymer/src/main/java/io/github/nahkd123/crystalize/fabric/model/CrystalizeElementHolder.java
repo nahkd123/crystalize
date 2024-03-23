@@ -107,7 +107,6 @@ public class CrystalizeElementHolder extends ElementHolder {
 
 	@Override
 	protected void onTick() {
-		translateStrategy = TranslateStrategy.POSITION_ONLY;
 		updateAnimations((float) ((System.nanoTime() - lastNano) / 1_000_000000d));
 		lastNano = System.nanoTime();
 		root.updateTree();

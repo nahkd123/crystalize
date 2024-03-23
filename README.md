@@ -42,7 +42,7 @@ Powered by [Polymer Virtual Entity](https://polymer.pb4.eu/latest/polymer-virtua
 Inverse Kinematics (IK) is a magical way of animating your model. Instead of hardcoding animation (or controlling each bones manually), IK allows you to control a chain of connected bones to point towards a location in the space! Think of it like your hand where you can use your bone to control your hand in space.
 
 - [x] Positioning the bones
-- [ ] Rotating the bones
+- [x] Rotating the bones
 - [ ] Add rotation constraints support.
 
 <p align="center">
@@ -58,6 +58,7 @@ The Crystalize and its components' code are licensed under MIT license.
 
 The sample models are mainly licensed under CC0 1.0 Universal license, except:
 - The "Taterinator" 3D model uses "Tiny Potato" texture from Botania by Vazkii/Violet Moon, which is [licensed under custom license](https://github.com/VazkiiMods/Botania/blob/1.20.x/LICENSE.txt). I honestly don't know if they are willing to let me license the model under CC0 1.0, but like, it's just a :), right? RIGHT?
+- The "tiny_potatog" test model uses frog entity model from Mojang Studios.
 
 ---
 <img src="./docs/Taterinator.png">

@@ -15,8 +15,6 @@ import org.joml.Vector3f;
  * implemented).
  * </p>
  * 
- * @deprecated This controller is currently WIP. The {@link Deprecated}
- *             annotation will be removed once I've finished implementing IK.
  * @see #getChainIds()
  * @see #getTolerance()
  * @see #getIterations()
@@ -25,13 +23,11 @@ import org.joml.Vector3f;
  *      "http://www.andreasaristidou.com/publications/papers/FABRIK.pdf">Paper:
  *      "FABRIK: A fast, iterative solver for the Inverse Kinematics problem"</a>
  */
-@Deprecated
 public class FabrikController implements AnimationController {
 	private List<String> chainIds;
 	private float tolerance;
 	private int iterations;
 	private Vector3f target;
-	private float time = 0f;
 
 	private Map<AnimatableBone, Vector3f> nextOrigins = new HashMap<>();
 	private Map<AnimatableBone, Vector3f> nextRotations = new HashMap<>();
@@ -130,10 +126,6 @@ public class FabrikController implements AnimationController {
 
 	@Override
 	public AnimateResult updateTimeRelative(float deltaTime, AnimatableBone root) {
-		time += deltaTime;
-		target.x = (float) Math.sin(time * 1.0f) * 0.5f;
-		target.y = (float) Math.sin(time * 2.0f) * 0.5f;
-		target.z = (float) Math.sin(time * 3.0f) * 0.5f;
 		applyIk(root);
 		return AnimateResult.CONTINUE;
 	}
@@ -225,7 +217,7 @@ public class FabrikController implements AnimationController {
 			boolean downward = forward.y < 0;
 			float x = forward.x;
 			float y = forward.z;
-			float z = Math.abs(forward.y);
+			float z = Math.abs(forward.y); // :yeefuckinhaw:
 
 			float yaw = (float) Math.atan2(y, x);
 			float pitch = downward

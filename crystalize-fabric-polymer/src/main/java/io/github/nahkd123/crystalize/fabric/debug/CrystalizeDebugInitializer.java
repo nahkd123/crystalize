@@ -79,6 +79,15 @@ public class CrystalizeDebugInitializer implements ModInitializer {
 					ctx.getSource().sendFeedback(() -> Text.literal("Added IK controller!"), false);
 				}
 
+				if (model.id().getPath().equals("debug/robotic_arm")) {
+					FabrikController controller = new FabrikController(Arrays.asList(
+						"984422d6-82df-2fc5-9509-809912aa01fd",
+						"fd6d3d3e-aa57-518e-b758-3e56901278ea",
+						"e99bebd5-5564-9731-9819-3bb487096f1c"), new Vector3f(12, 12, 12));
+					holder.addAnimation(controller);
+					ctx.getSource().sendFeedback(() -> Text.literal("Added IK controller!"), false);
+				}
+
 				ctx.getSource().sendFeedback(() -> Text.literal("Placed model at " + pos), true);
 				return 1;
 			})));
