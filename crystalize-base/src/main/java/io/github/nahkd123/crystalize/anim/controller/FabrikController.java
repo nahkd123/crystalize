@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.joml.Vector3f;
 
@@ -28,6 +29,7 @@ public class FabrikController implements AnimationController {
 	private float tolerance;
 	private int iterations;
 	private Vector3f target;
+	private BiConsumer<AnimatableBone, Vector3f> constraints;
 
 	private Map<AnimatableBone, Vector3f> nextOrigins = new HashMap<>();
 	private Map<AnimatableBone, Vector3f> nextRotations = new HashMap<>();
@@ -37,26 +39,30 @@ public class FabrikController implements AnimationController {
 	 * Create a new FABRIK bones controller.
 	 * </p>
 	 * 
-	 * @param chainIds   An ordered list/sequence of IDs, with the first ID
-	 *                   corresponding to the head of the chain, and the last ID for
-	 *                   the tail of the chain. The list must have at least 2
-	 *                   elements.
-	 * @param tolerance  The IK tolerance. Smaller value implies better quality, but
-	 *                   will consumes more CPU usage. <b>Setting this to 0 may
-	 *                   cause the controller to stuck in infinite loop!</b> You
-	 *                   might also want to change the number to iterations to be
-	 *                   higher if the tolerance value is small enough.
-	 * @param iterations The number of IK iterations. Higher value implies better
-	 *                   quality at a cost of longer processing time.
-	 * @param target     The target position, which all the bones in the chain will
-	 *                   points towards. The vector must be <i>mutable</i>.
+	 * @param chainIds    An ordered list/sequence of IDs, with the first ID
+	 *                    corresponding to the head of the chain, and the last ID
+	 *                    for the tail of the chain. The list must have at least 2
+	 *                    elements.
+	 * @param tolerance   The IK tolerance. Smaller value implies better quality,
+	 *                    but will consumes more CPU usage. <b>Setting this to 0 may
+	 *                    cause the controller to stuck in infinite loop!</b> You
+	 *                    might also want to change the number to iterations to be
+	 *                    higher if the tolerance value is small enough.
+	 * @param iterations  The number of IK iterations. Higher value implies better
+	 *                    quality at a cost of longer processing time.
+	 * @param target      The target position, which all the bones in the chain will
+	 *                    points towards. The vector must be <i>mutable</i>.
+	 * @param constraints The joint constraints applier. The method should mutate
+	 *                    the {@link Vector3f} object (which are Euler angles) to
+	 *                    keep all values within range.
 	 * @see #FabrikController(List, Vector3f)
 	 */
-	public FabrikController(List<String> chainIds, float tolerance, int iterations, Vector3f target) {
+	public FabrikController(List<String> chainIds, float tolerance, int iterations, Vector3f target, BiConsumer<AnimatableBone, Vector3f> constraints) {
 		this.chainIds = chainIds;
 		this.tolerance = tolerance;
 		this.iterations = iterations;
 		this.target = target;
+		this.constraints = constraints;
 	}
 
 	/**
@@ -70,7 +76,7 @@ public class FabrikController implements AnimationController {
 	 * @see #FabrikController(List, float, int, Vector3f)
 	 */
 	public FabrikController(List<String> chainIds, Vector3f target) {
-		this(chainIds, 1E-6f, chainIds.size() * 3, target);
+		this(chainIds, 1E-6f, chainIds.size() * 3, target, (a, b) -> {});
 	}
 
 	/**
@@ -172,12 +178,14 @@ public class FabrikController implements AnimationController {
 			}
 		} else {
 			// It is reachable, thus we will do forward and backward reaching here
-			int maxIteration = iterations;
+			int iter = iterations;
 			Vector3f oldRoot = new Vector3f(origins[0]);
 			float dif = origins[origins.length - 1].distance(target);
 
-			while (dif > tolerance && maxIteration > 0) {
-				maxIteration--;
+			// Sometime it's best to limit the number of iterations. The original algorithm
+			// does not have this safeguard.
+			while (dif > tolerance && iter > 0) {
+				iter--;
 
 				// Forward reaching
 				origins[origins.length - 1].set(target);
@@ -201,12 +209,23 @@ public class FabrikController implements AnimationController {
 					origins[i + 1].z = (1 - scale) * origins[i].z + scale * origins[i + 1].z;
 				}
 
+				// Here we apply constrains
+				// We have to perform angles calculation here, then pass the mutable vector
+				// to suppliers (a.k.a the "constraints").
+				// computeRotations(origins, branch);
+				// applyRotations(origins, branch);
+
+				// Don't forget to update the dif
 				dif = origins[origins.length - 1].distance(target);
 			}
 		}
 
 		// We now have all the joints' position, it's time to compute the rotations. We
 		// only want to apply rotations to bones.
+		computeRotations(origins, branch);
+	}
+
+	private void computeRotations(Vector3f[] origins, List<AnimatableBone> branch) {
 		Vector3f forward = new Vector3f();
 
 		for (int i = 0; i < origins.length - 1; i++) {
@@ -224,12 +243,17 @@ public class FabrikController implements AnimationController {
 				? (float) (Math.PI - Math.acos(z))
 				: (float) Math.acos(z);
 
-			// Compute euler angles
+			// Apply
 			Vector3f boneRot = nextRotations.compute(branch.get(i), (k, vec) -> vec == null ? new Vector3f() : vec);
 			boneRot.x = 0.0f;
 			boneRot.y = pitch;
 			boneRot.z = yaw;
+			constraints.accept(branch.get(i), boneRot);
 		}
+	}
+
+	private void applyRotations(Vector3f[] origins, List<AnimatableBone> branch) {
+		// TODO copy the code from BonePart here
 	}
 
 	@Override
