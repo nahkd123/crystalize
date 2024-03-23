@@ -39,6 +39,7 @@ public class BonePart implements AnimatableBone {
 
 	public BonePart getParent() { return parent; }
 
+	@Override
 	public ElementGroup getTemplate() { return template; }
 
 	public ItemDisplayElement getDisplay() { return display; }

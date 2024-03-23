@@ -130,9 +130,9 @@ public class FabrikController implements AnimationController {
 	@Override
 	public AnimateResult updateTimeRelative(float deltaTime, AnimatableBone root) {
 		time += deltaTime;
-		target.x = (float) Math.sin(time * 1f);
-		target.y = (float) Math.cos(time * 2f);
-		target.z = (float) Math.cos(time * 3f);
+		target.x = (float) Math.sin(time * 1f) * 0.5f;
+		target.y = (float) Math.cos(time * 2f) * 0.5f;
+		target.z = (float) Math.cos(time * 3f) * 0.5f;
 		applyIk(root);
 		return AnimateResult.CONTINUE;
 	}
@@ -154,15 +154,12 @@ public class FabrikController implements AnimationController {
 		float[] distances = new float[branch.size() - 1];
 
 		for (int i = 0; i < origins.length; i++) {
-			// We'll assume there always be a distance of 0.5 between all bones
-			// Note that this is for testing only; the actual implementation will have to
-			// fetch the distance from model template.
-			if (i >= 1) distances[i - 1] = 0.5f;
-
 			// Here we get the previous origin of the bone (which was applied from previous
 			// animation tick). This allows the bones to move around in more natural way.
-			origins[i] = nextOrigins.compute(branch.get(i), (k, vec) -> vec == null ? new Vector3f() : vec);
-			origins[i].set(branch.get(i).getOrigin());
+			AnimatableBone current = branch.get(i);
+			origins[i] = nextOrigins.compute(current, (k, vec) -> vec == null ? new Vector3f() : vec);
+			origins[i].set(current.getOrigin());
+			if (i >= 1) distances[i - 1] = current.getTemplate().origin().length() / 16f;
 		}
 
 		// If the target is unreachable (out of reachable range), we'll straighten the

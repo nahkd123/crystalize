@@ -36,6 +36,25 @@ public interface AnimatableBone {
 	 */
 	public Collection<? extends AnimatableBone> getChildren();
 
+	/**
+	 * <p>
+	 * Get the template bone that this bone is based on. The
+	 * {@link ElementGroup#origin()} is relative to parent bone.
+	 * </p>
+	 * 
+	 * @return The template bone.
+	 */
+	public ElementGroup getTemplate();
+
+	/**
+	 * <p>
+	 * Get origin of this bone, as kown as absolute position of the bone in model
+	 * space (or relative to model's origin in world space).
+	 * </p>
+	 * </p>
+	 * 
+	 * @return The bone origin.
+	 */
 	public Vector3f getOrigin();
 
 	/**
