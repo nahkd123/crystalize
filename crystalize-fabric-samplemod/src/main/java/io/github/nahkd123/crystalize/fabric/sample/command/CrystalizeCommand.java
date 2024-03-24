@@ -1,16 +1,20 @@
 package io.github.nahkd123.crystalize.fabric.sample.command;
 
+import static io.github.nahkd123.crystalize.fabric.sample.CrystalizeSampleMod.MODID;
 import static net.minecraft.command.argument.IdentifierArgumentType.identifier;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static net.minecraft.text.Text.translatable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.joml.Vector3f;
 
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -25,7 +29,10 @@ import eu.pb4.polymer.virtualentity.api.attachment.ChunkAttachment;
 import eu.pb4.polymer.virtualentity.api.attachment.HolderAttachment;
 import io.github.nahkd123.crystalize.anim.AnimateMode;
 import io.github.nahkd123.crystalize.anim.Animation;
+import io.github.nahkd123.crystalize.anim.controller.AnimatableBone;
+import io.github.nahkd123.crystalize.anim.controller.AnimateResult;
 import io.github.nahkd123.crystalize.anim.controller.AnimationController;
+import io.github.nahkd123.crystalize.anim.controller.FabrikController;
 import io.github.nahkd123.crystalize.anim.controller.TemplatedAnimationController;
 import io.github.nahkd123.crystalize.fabric.model.CrystalizeElementHolder;
 import io.github.nahkd123.crystalize.fabric.model.ModelsManager;
@@ -48,6 +55,7 @@ public class CrystalizeCommand {
 	public static final Dynamic2CommandExceptionType UNKNOWN_ANIMATION_ID = new Dynamic2CommandExceptionType((model, anim) -> translatable("crystalize.command.unknownAnimationId", model, anim));
 	public static final DynamicCommandExceptionType NO_HOLDER_UUID = new DynamicCommandExceptionType(uuid -> translatable("crystalize.command.noHolder", uuid));
 	public static final DynamicCommandExceptionType UNKNOWN_TRANSLATION_STRATEGY = new DynamicCommandExceptionType(type -> translatable("crystalize.command.unknownTranslationStrategy", type));
+	public static final DynamicCommandExceptionType NO_IK_CHAIN = new DynamicCommandExceptionType(id -> translatable("crystalize.command.noIkChain", id));
 	// @formatter:on
 
 	public static LiteralArgumentBuilder<ServerCommandSource> command(ModelsManager modelsManager) {
@@ -55,6 +63,7 @@ public class CrystalizeCommand {
 			.requires(source -> source.hasPermissionLevel(3))
 			.then(place(modelsManager))
 			.then(addAnimation())
+			.then(addIk())
 			.then(inspect());
 	}
 
@@ -114,7 +123,7 @@ public class CrystalizeCommand {
 			location.getY(),
 			location.getZ(),
 			generatedId.toString()), true);
-		return 0;
+		return 1;
 	}
 
 	private static LiteralArgumentBuilder<ServerCommandSource> addAnimation() {
@@ -147,7 +156,7 @@ public class CrystalizeCommand {
 			uuid,
 			holder.getModelId(),
 			animationId), true);
-		return 0;
+		return 1;
 	}
 
 	private static SuggestionProvider<ServerCommandSource> holderAnimationIds() {
@@ -169,12 +178,56 @@ public class CrystalizeCommand {
 		};
 	}
 
+	// We need a mapping of model ID to a chain of bones' ID for IK
+	// Bone IDs are obtained from ElementGroup#id() and it can be Blockbench element
+	// UUID.
+	private static final Map<Identifier, List<String>> IK_CHAINS = Map.of(
+		new Identifier(MODID, "robotic_arm"),
+		Arrays.asList(
+			"984422d6-82df-2fc5-9509-809912aa01fd",
+			"fd6d3d3e-aa57-518e-b758-3e56901278ea",
+			"e99bebd5-5564-9731-9819-3bb487096f1c"));
+
+	private static LiteralArgumentBuilder<ServerCommandSource> addIk() {
+		return literal("add-ik").then(argument("uuid", UuidArgumentType.uuid()).suggests(holdersUuids())
+			.executes(context -> {
+				UUID uuid = UuidArgumentType.getUuid(context, "uuid");
+				Map<UUID, CrystalizeElementHolder> map = context.getSource().getWorld().getAttachedOrCreate(HOLDERS);
+				CrystalizeElementHolder holder = map.get(uuid);
+				if (holder == null) throw NO_HOLDER_UUID.create(uuid);
+
+				List<String> ikChain = IK_CHAINS.get(holder.getModelId());
+				if (ikChain == null) throw NO_IK_CHAIN.create(holder.getModelId());
+
+				// Normally you would create a new class that extends FabrikController, but we
+				// are not going to follow good Java practice here :wink:.
+				FabrikController controller = new FabrikController(ikChain, new Vector3f()) {
+					private double time = 0d;
+
+					@Override
+					public AnimateResult updateTimeRelative(float deltaTime, AnimatableBone root) {
+						getTarget().x = (float) Math.cos(time * 1f);
+						getTarget().y = (float) Math.cos(time * 2f);
+						getTarget().z = (float) Math.sin(time * 3f);
+						getTarget().normalize();
+						time += deltaTime;
+						return super.updateTimeRelative(deltaTime, root);
+					}
+				};
+
+				holder.addAnimation(controller);
+				context.getSource().sendFeedback(() -> Text.translatable("crystalize.command.addedIk",
+					holder.getModelId()), true);
+				return 1;
+			}));
+	}
+
 	private static LiteralArgumentBuilder<ServerCommandSource> inspect() {
 		return literal("inspect").then(argument("uuid", UuidArgumentType.uuid()).suggests(holdersUuids())
 			.executes(context -> {
 				ServerCommandSource source = context.getSource();
 				UUID uuid = UuidArgumentType.getUuid(context, "uuid");
-				Map<UUID, CrystalizeElementHolder> map = source.getWorld().getAttachedOrCreate(HOLDERS);
+				Map<UUID, CrystalizeElementHolder> map = context.getSource().getWorld().getAttachedOrCreate(HOLDERS);
 				CrystalizeElementHolder holder = map.get(uuid);
 				if (holder == null) throw NO_HOLDER_UUID.create(uuid);
 
@@ -187,7 +240,7 @@ public class CrystalizeCommand {
 				}
 
 				source.sendMessage(translatable("crystalize.command.inspectEnd"));
-				return 0;
+				return 1;
 			}));
 	}
 }

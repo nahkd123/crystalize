@@ -6,4 +6,6 @@ repositories {
 dependencies {
 	implementation "com.mojang:datafixerupper:${rootProject.datafixerupper_version}"
 	implementation "org.joml:joml:${rootProject.joml_version}"
+
+	testImplementation "org.junit.jupiter:junit-jupiter:${rootProject.junit_version}"
 }

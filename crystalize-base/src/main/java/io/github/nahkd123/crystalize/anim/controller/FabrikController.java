@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import org.joml.Math;
 import org.joml.Vector3f;
 
 /**
@@ -52,9 +53,11 @@ public class FabrikController implements AnimationController {
 	 *                    quality at a cost of longer processing time.
 	 * @param target      The target position, which all the bones in the chain will
 	 *                    points towards. The vector must be <i>mutable</i>.
-	 * @param constraints The joint constraints applier. The method should mutate
-	 *                    the {@link Vector3f} object (which are Euler angles) to
-	 *                    keep all values within range.
+	 * @param constraints The joint constraints applier, or {@code null} to ignore
+	 *                    constraints. The method should mutate the {@link Vector3f}
+	 *                    object (which is the direction vector of the bone) to keep
+	 *                    all values within range. The direction vector should
+	 *                    always be normalized.
 	 * @see #FabrikController(List, Vector3f)
 	 */
 	public FabrikController(List<String> chainIds, float tolerance, int iterations, Vector3f target, BiConsumer<AnimatableBone, Vector3f> constraints) {
@@ -76,7 +79,7 @@ public class FabrikController implements AnimationController {
 	 * @see #FabrikController(List, float, int, Vector3f)
 	 */
 	public FabrikController(List<String> chainIds, Vector3f target) {
-		this(chainIds, 1E-6f, chainIds.size() * 3, target, (a, b) -> {});
+		this(chainIds, 1E-6f, chainIds.size() * 3, target, null);
 	}
 
 	/**
@@ -176,6 +179,8 @@ public class FabrikController implements AnimationController {
 				Vector3f newOrigin = direction.mul(distance, new Vector3f()).add(origins[i - 1]);
 				origins[i].set(newOrigin);
 			}
+
+			applyConstraints(origins, branch, distances);
 		} else {
 			// It is reachable, thus we will do forward and backward reaching here
 			int iter = iterations;
@@ -209,13 +214,7 @@ public class FabrikController implements AnimationController {
 					origins[i + 1].z = (1 - scale) * origins[i].z + scale * origins[i + 1].z;
 				}
 
-				// Here we apply constrains
-				// We have to perform angles calculation here, then pass the mutable vector
-				// to suppliers (a.k.a the "constraints").
-				// computeRotations(origins, branch);
-				// applyRotations(origins, branch);
-
-				// Don't forget to update the dif
+				applyConstraints(origins, branch, distances);
 				dif = origins[origins.length - 1].distance(target);
 			}
 		}
@@ -235,25 +234,34 @@ public class FabrikController implements AnimationController {
 			// Calculate Euler angles
 			boolean downward = forward.y < 0;
 			float x = forward.x;
-			float y = forward.z;
-			float z = Math.abs(forward.y); // :yeefuckinhaw:
+			float y = Math.abs(forward.y);
+			float z = forward.z;
 
-			float yaw = (float) Math.atan2(y, x);
+			float yaw = (float) Math.atan2(-x, z);
 			float pitch = downward
-				? (float) (Math.PI - Math.acos(z))
-				: (float) Math.acos(z);
+				? (float) (Math.PI - Math.acos(y))
+				: (float) Math.acos(y);
 
 			// Apply
 			Vector3f boneRot = nextRotations.compute(branch.get(i), (k, vec) -> vec == null ? new Vector3f() : vec);
 			boneRot.x = 0.0f;
-			boneRot.y = pitch;
-			boneRot.z = yaw;
-			constraints.accept(branch.get(i), boneRot);
+			boneRot.y = yaw;
+			boneRot.z = pitch;
 		}
 	}
 
-	private void applyRotations(Vector3f[] origins, List<AnimatableBone> branch) {
-		// TODO copy the code from BonePart here
+	private void applyConstraints(Vector3f[] origins, List<AnimatableBone> branch, float[] distances) {
+		if (constraints == null) return;
+		Vector3f forward = new Vector3f();
+
+		for (int i = 0; i < origins.length - 1; i++) {
+			origins[i + 1].sub(origins[i], forward);
+			float lastLength = forward.length();
+			forward.normalize();
+			constraints.accept(branch.get(i), forward);
+			forward.mul(lastLength);
+			origins[i + 1].set(origins[i]).add(forward);
+		}
 	}
 
 	@Override
@@ -263,8 +271,8 @@ public class FabrikController implements AnimationController {
 
 		if (nextRotation != null) {
 			part.getRotation().x = nextRotation.x;
-			part.getRotation().y = nextRotation.z;
-			part.getRotation().z = nextRotation.y;
+			part.getRotation().y = nextRotation.y;
+			part.getRotation().z = nextRotation.z;
 		}
 	}
 
