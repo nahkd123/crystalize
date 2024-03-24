@@ -1,64 +1,65 @@
+<p align="center">
+<img src="./docs/banner.png" width="720">
+</p>
+
+---
 # Crystalize
 _I've reimplemented [Nylon](https://modrinth.com/mod/nylon), but at what cost?_
 
 Crystalize uses display entities to display models from Blockbench (non-cube meshes are not supported, obviously) on your Minecraft server. Simply drag and drop Blockbench model to your mod, use `ModelsManager.registerModel()` and you are ready to go! Sounds simple but I wasted more than 40 hours of my life just to cook this library mod (and it's not even finished yet).
 
 <p align="center">
-<img src="./docs/froggo.gif">
+<img src="./docs/froggo.gif" height="200"> <img src="./docs/vanillaclient.png" height="200">
 <br>
 Custom model animation completely client-side!
 </p>
 
-<p align="center">
-<img src="./docs/vanillaclient.png">
-<br>
-Compatible with vanilla clients!
-</p>
-
-## "Why are you... reimplementing Nylon?"
-0. I need more flexibility (animation timescale, replacing part models, etc...).
-0. Nylon requires me to "pre-render the model" with Animated Java (which computes all the keyframes). Ok fine I can do just that but what IF I want to change the keyframes during runtime? (which is not likely going to happen)
-0. I am lazy so I want to slap a single Blockbench file into my mod and call it a day (it is actually possible to render the animations for Nylon during runtime as I can read Blockbench file and do some processing).
-0. You know what? I'd like to challenge myself. It feels like you've achieved something big when your animation code is working.
-
 ## The tech behind Crystalize (and Nylon, along with other server-side models library)
 display entties lol.
 
-## Crystalize components
-### Crystalize Base
-The base code for all things Crystalize! Includes common structure for all animated models.
+## Features
+### Blockbench Models loader
+Load models directly from your Blockbench project file! Crystalize will automatically construct all model parts as JSON models and assign it to custom model data value of `minecraft:command_block`.
 
-### Crystalize Blockbench
-Include codecs for reading Blockbench's "Generic Model" project, as well as component for building to Crystalize Model.
-
-### Crystalize Minecraft Model
-Include codecs for reading and writing Minecraft JSON models + texture atlases.
-
-### Crystalize Fabric Polymer
-Powered by [Polymer Virtual Entity](https://polymer.pb4.eu/latest/polymer-virtual-entity/basics/), this component include a runtime model and animations controller. Animations are ticked at 20 times/second, so server performance might be an issue here. I also am not sure if virtual entity API is thread-safe.
-
-## TODOs and future works
-### Implementing Inverse Kinematics
-Inverse Kinematics (IK) is a magical way of animating your model. Instead of hardcoding animation (or controlling each bones manually), IK allows you to control a chain of connected bones to point towards a location in the space! Think of it like your hand where you can use your bone to control your hand in space.
-
-- [x] Positioning the bones
-- [x] Rotating the bones
-- [ ] Add rotation constraints support.
+### Inverse Kinematics
+Tired of animating each part one by one? Now you can use `FabrikController` ([FABRIK][FABRIK Paper] is the name of the IK algorithm)! This IK controller automatically animates your model parts such that the end position of the chain reaches your target position. _IK constraints is supported but you might need to convert direction vector to rotation and vice versa._
 
 <p align="center">
 <img src="./docs/ik.gif">
 <br>
-Inverse Kinematics (position only). The bones point towards a point in invisible sphere.
+Inverse Kinematics (unconstrained)
 </p>
 
-## License
-The Crystalize and its components' code are licensed under MIT license.
+## Crystalize components
+### Crystalize Base
+The common code for all platforms and components. Includes Crystalize model structure, animations and animation controllers.
+
+### Crystalize Blockbench
+Includes codecs for reading Blockbench's "Generic Model" project, as well as component for building to Crystalize model (which is `Model`).
+
+### Crystalize Minecraft Model
+Includes codecs for reading and writing Minecraft JSON models + texture atlases, as well as builder for building `ElementGroup` into JSON model.
+
+### Crystalize Fabric Polymer
+Powered by [Polymer Virtual Entity](https://polymer.pb4.eu/latest/polymer-virtual-entity/basics/), this component allows you to load your Crystalize model in your Fabric server and control it. See `crystalize-fabric-samplemod` for example usage.
+
+### Crystalize Bukkit (WIP)
+Bukkit implementation. Work in progress but the priority for this platform is not high.
+
+## License and acknowledgments
+The Crystalize and its components' code are licensed under [MIT license](./LICENSE).
 
 [Mojang's DataFixerUpper](https://github.com/Mojang/DataFixerUpper) and [JOML](https://github.com/JOML-CI/JOML) are licensed under MIT license.
 
+[Patbox's Polymer](https://github.com/Patbox/polymer) and its components are licensed under [LGPL 3.0](https://github.com/Patbox/polymer/blob/dev/1.20.3/LICENSE).
+
 The sample models are mainly licensed under CC0 1.0 Universal license, except:
 - The "Taterinator" 3D model uses "Tiny Potato" texture from Botania by Vazkii/Violet Moon, which is [licensed under custom license](https://github.com/VazkiiMods/Botania/blob/1.20.x/LICENSE.txt). I honestly don't know if they are willing to let me license the model under CC0 1.0, but like, it's just a :), right? RIGHT?
-- The "tiny_potatog" test model uses frog entity model from Mojang Studios.
+- The "tiny_potatog" test model uses frog entity model from Mojang Studios. (c) Mojang Studios/Microsoft Corporation.
+
+Paper: ["FABRIK: A fast, iterative solver for the Inverse Kinematics problem"][FABRIK Paper] by Aristidou, Andreas and Lasenby, Joan. [DOI](https://doi.org/10.1016/j.gmod.2011.05.003).
 
 ---
-<img src="./docs/Taterinator.png">
+<img src="./docs/Taterinator.png" width="200">
+
+[FABRIK Paper]: http://www.andreasaristidou.com/publications/papers/FABRIK.pdf
