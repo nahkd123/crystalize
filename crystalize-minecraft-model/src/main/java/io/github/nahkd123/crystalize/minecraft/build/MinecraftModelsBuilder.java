@@ -71,7 +71,7 @@ public class MinecraftModelsBuilder {
 			}
 		}
 
-		MinecraftModel built = new MinecraftModel(null, Collections.emptyMap(), textures, GuiLight.SIDE, elements);
+		MinecraftModel built = new MinecraftModel(null, Collections.emptyMap(), textures, GuiLight.SIDE, elements, Collections.emptyList());
 		consumer.accept(Map.entry(group, built));
 	}
 }

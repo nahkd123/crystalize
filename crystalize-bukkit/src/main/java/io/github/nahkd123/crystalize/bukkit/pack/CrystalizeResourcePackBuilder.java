@@ -32,7 +32,13 @@ import io.github.nahkd123.crystalize.bukkit.CrystalizePlugin;
 import io.github.nahkd123.crystalize.bukkit.model.ItemModel;
 import io.github.nahkd123.crystalize.minecraft.atlas.SpriteSingleSource;
 import io.github.nahkd123.crystalize.minecraft.atlas.TextureAtlas;
+import io.github.nahkd123.crystalize.minecraft.meta.PackMeta;
+import io.github.nahkd123.crystalize.minecraft.meta.PackVersionRange;
+import io.github.nahkd123.crystalize.minecraft.meta.PackVersions;
+import io.github.nahkd123.crystalize.minecraft.model.GuiLight;
 import io.github.nahkd123.crystalize.minecraft.model.MinecraftModel;
+import io.github.nahkd123.crystalize.minecraft.model.override.ModelOverride;
+import io.github.nahkd123.crystalize.minecraft.model.override.PredicateType;
 import io.github.nahkd123.crystalize.minecraft.utils.ResourceLocation;
 import io.github.nahkd123.crystalize.texture.Texture;
 
@@ -81,9 +87,35 @@ public class CrystalizeResourcePackBuilder implements ResourcePackBuilder {
 	}
 
 	private ItemModel allocateNewModel(NamespacedKey modelPath) {
-		// TODO cycle
+		// TODO cycle through different materials
 		int value = modelsCounter.compute(Material.COMMAND_BLOCK, (mat, val) -> val == null ? 1 : (val + 1));
-		// TODO add model to command_block.json
+
+		// @formatter:off
+		update("assets/minecraft/models/item/command_block.json", MinecraftModel.CODEC,
+			oldModel -> new MinecraftModel(
+				new ResourceLocation("minecraft", "block/command_block"),
+				Collections.emptyMap(),
+				Collections.emptyMap(),
+				GuiLight.SIDE,
+				Collections.emptyList(),
+				Stream.concat(
+					oldModel.overrides().stream(),
+					Stream.of(new ModelOverride(
+						PredicateType.CUSTOM_MODEL_DATA,
+						value,
+						new ResourceLocation(modelPath.getNamespace(), modelPath.getKey())))).toList()),
+			() -> new MinecraftModel(
+				new ResourceLocation("minecraft", "block/command_block"),
+				Collections.emptyMap(),
+				Collections.emptyMap(),
+				GuiLight.SIDE,
+				Collections.emptyList(),
+				Collections.singletonList(new ModelOverride(
+					PredicateType.CUSTOM_MODEL_DATA,
+					value,
+					new ResourceLocation(modelPath.getNamespace(), modelPath.getKey())))));
+		// @formatter:on
+
 		return new ItemModel(Material.COMMAND_BLOCK, value);
 	}
 
@@ -110,6 +142,10 @@ public class CrystalizeResourcePackBuilder implements ResourcePackBuilder {
 
 	@Override
 	public void build(PackBuildContext context) {
+		update("pack.mcmeta", PackMeta.CODEC,
+			UnaryOperator.identity(),
+			() -> new PackMeta(PackVersions.v1_20_4, PackVersionRange.v1_20));
+
 		try (OutputStream stream = context.createStream()) {
 			ZipOutputStream zip = new ZipOutputStream(stream, StandardCharsets.UTF_8);
 
