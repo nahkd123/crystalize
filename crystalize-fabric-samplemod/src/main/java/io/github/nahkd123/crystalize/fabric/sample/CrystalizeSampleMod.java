@@ -25,10 +25,13 @@ import io.github.nahkd123.crystalize.fabric.CrystalizeFabric;
 import io.github.nahkd123.crystalize.fabric.model.ModelsManager;
 import io.github.nahkd123.crystalize.fabric.sample.command.CrystalizeCommand;
 import io.github.nahkd123.crystalize.fabric.sample.entity.RoboticArmEntity;
+import io.github.nahkd123.crystalize.fabric.sample.entity.TinyPotatogEntity;
 import io.github.nahkd123.crystalize.model.Model;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -76,6 +79,10 @@ public class CrystalizeSampleMod implements ModInitializer {
 		// resource pack to see your robotic arms!
 		Registry.register(Registries.ENTITY_TYPE, new Identifier(MODID, "robotic_arm"), RoboticArmEntity.TYPE);
 		PolymerEntityUtils.registerType(RoboticArmEntity.TYPE);
+
+		Registry.register(Registries.ENTITY_TYPE, new Identifier(MODID, "tiny_potatog"), TinyPotatogEntity.TYPE);
+		FabricDefaultAttributeRegistry.register(TinyPotatogEntity.TYPE, FrogEntity.createFrogAttributes());
+		PolymerEntityUtils.registerType(TinyPotatogEntity.TYPE);
 	}
 
 	/*
