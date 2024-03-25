@@ -1,18 +1,23 @@
 package io.github.nahkd123.crystalize.fabric.sample;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.JsonOps;
 
+import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import io.github.nahkd123.crystalize.blockbench.BlockbenchProject;
 import io.github.nahkd123.crystalize.blockbench.build.BlockbenchModelBuilder;
 import io.github.nahkd123.crystalize.fabric.CrystalizeFabric;
@@ -41,6 +46,15 @@ public class CrystalizeSampleMod implements ModInitializer {
 		modelsManager.registerModel(new Identifier(MODID, "taterinator"), load("models/Taterinator.bbmodel").get());
 		modelsManager.registerModel(new Identifier(MODID, "tiny_potatog"), load("models/tiny_potatog.bbmodel").get());
 		// @formatter:on
+
+		// You can also load models outside the mod as well! Just make sure to only
+		// register before the server is started, otherwise some item models might be
+		// missing on client.
+		loadExternalModels(modelsManager);
+
+		// We have language file stored in our "assets/" folder, so we need to add
+		// assets from our mod to Polymer Resource Pack API.
+		PolymerResourcePackUtils.addModAssets(MODID);
 
 		// Register our test commands
 		// CrystalizeCommand contains example on how to spawn a model, play animations
@@ -71,4 +85,37 @@ public class CrystalizeSampleMod implements ModInitializer {
 			.flatMap(json -> BlockbenchProject.CODEC.decode(JsonOps.INSTANCE, json).resultOrPartial(LOGGER::error))
 			.map(pair -> BlockbenchModelBuilder.build(pair.getFirst()));
 	}
+
+	private void loadExternalModels(ModelsManager modelsManager) {
+		try {
+			Path externModelsDir = FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve("models");
+			LOGGER.info("Loading our external models from {}", externModelsDir);
+			if (Files.notExists(externModelsDir)) Files.createDirectories(externModelsDir);
+
+			Files.list(externModelsDir).forEach(modelPath -> {
+				String filename = modelPath.getFileName().toString();
+				if (!filename.endsWith(".bbmodel")) return;
+
+				// .substring() removes the .bbmodel (8 characters) from filename
+				Identifier modelId = new Identifier(MODID, "external/" + filename.substring(0, filename.length() - 8));
+
+				try (BufferedReader reader = Files.newBufferedReader(modelPath)) {
+					JsonElement json = JsonParser.parseReader(reader);
+					var result = BlockbenchProject.CODEC.decode(JsonOps.INSTANCE, json);
+					if (result.error().isPresent()) throw new JsonSyntaxException(result.error().get().message());
+
+					BlockbenchProject proj = result.get().left().get().getFirst();
+					Model model = BlockbenchModelBuilder.build(proj);
+					modelsManager.registerModel(modelId, model);
+				} catch (IOException | JsonSyntaxException e) {
+					e.printStackTrace();
+					LOGGER.error("Failed to load external model: " + modelId);
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+			LOGGER.error("Failed to load models from our external folder. Let's ignore that.");
+		}
+	}
+
 }
