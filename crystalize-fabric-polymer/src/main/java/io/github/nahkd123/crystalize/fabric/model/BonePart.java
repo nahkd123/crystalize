@@ -30,6 +30,9 @@ public class BonePart implements AnimatableBone {
 	private Vector3f lastBoneScale = new Vector3f();
 	private Vector3f lastModelRot = new Vector3f();
 
+	// Reduce send packet calls
+	private Vec3d lastEntityOffset = null;
+
 	public BonePart(CrystalizeElementHolder holder, BonePart parent, ElementGroup template, ItemDisplayElement display) {
 		this.holder = holder;
 		this.parent = parent;
@@ -100,20 +103,26 @@ public class BonePart implements AnimatableBone {
 			.add(boneTranslation)
 			.rotate(modelRot)
 			.add(holder.modelTranslation);
+		Vec3d entityOffset;
 
 		switch (holder.getTranslateStrategy()) {
 		case POSITION_ONLY:
-			display.setOffset(new Vec3d(computedTranslate));
+			entityOffset = new Vec3d(computedTranslate);
 			computedTranslate.zero();
 			break;
 		case TRANSLATION_ONLY:
-			display.setOffset(Vec3d.ZERO);
+			entityOffset = Vec3d.ZERO;
 			break;
 		case MIXED:
 		default:
 			computedTranslate.set(boneTranslation).rotate(modelRot);
-			display.setOffset(new Vec3d(new Vector3f(boneOrigin).rotate(modelRot).add(holder.modelTranslation)));
+			entityOffset = new Vec3d(new Vector3f(boneOrigin).rotate(modelRot).add(holder.modelTranslation));
 			break;
+		}
+
+		if (lastEntityOffset == null || !lastEntityOffset.equals(entityOffset)) {
+			display.setOffset(entityOffset);
+			lastEntityOffset = entityOffset;
 		}
 
 		applyTransformations(computedTranslate, modelRot);
