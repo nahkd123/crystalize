@@ -28,6 +28,7 @@ public class BonePart implements AnimatableBone {
 	private Vector3f lastComputedTranslate = new Vector3f();
 	private Vector3f lastBoneRotation = new Vector3f();
 	private Vector3f lastBoneScale = new Vector3f();
+	private Vector3f lastModelRot = new Vector3f();
 
 	public BonePart(CrystalizeElementHolder holder, BonePart parent, ElementGroup template, ItemDisplayElement display) {
 		this.holder = holder;
@@ -115,15 +116,16 @@ public class BonePart implements AnimatableBone {
 			break;
 		}
 
-		applyTransformations(computedTranslate);
+		applyTransformations(computedTranslate, modelRot);
 		for (BonePart child : children) child.updateTree();
 	}
 
-	private void applyTransformations(Vector3f computedTranslate) {
+	private void applyTransformations(Vector3f computedTranslate, Quaternionf modelRotation) {
 		boolean translateChanged = !lastComputedTranslate.equals(computedTranslate);
 		boolean rotationChanged = !lastBoneRotation.equals(boneRotation);
 		boolean scaleChanged = !lastBoneScale.equals(boneScale);
-		boolean interpolation = translateChanged || rotationChanged || scaleChanged;
+		boolean modelRotChanged = !lastModelRot.equals(holder.modelRotation);
+		boolean interpolation = translateChanged || rotationChanged || scaleChanged || modelRotChanged;
 
 		if (translateChanged)
 			display.setTranslation(computedTranslate);
@@ -131,6 +133,8 @@ public class BonePart implements AnimatableBone {
 			display.setRightRotation(new Quaternionf().rotateZYX(boneRotation.x, boneRotation.y, boneRotation.z));
 		if (scaleChanged)
 			display.setScale(boneScale);
+		if (modelRotChanged)
+			display.setLeftRotation(modelRotation);
 
 		if (holder.getTranslateStrategy() != TranslateStrategy.POSITION_ONLY && interpolation) {
 			display.setStartInterpolation(0);
@@ -142,5 +146,6 @@ public class BonePart implements AnimatableBone {
 		lastComputedTranslate.set(computedTranslate);
 		lastBoneRotation.set(boneRotation);
 		lastBoneScale.set(boneScale);
+		lastModelRot.set(holder.modelRotation);
 	}
 }
