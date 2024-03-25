@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.joml.Vector3f;
+
 import io.github.nahkd123.crystalize.anim.AnimateMode;
 import io.github.nahkd123.crystalize.anim.Animation;
 import io.github.nahkd123.crystalize.anim.Animator;
-import io.github.nahkd123.crystalize.utils.Transformation;
+import io.github.nahkd123.crystalize.anim.Channel;
+import io.github.nahkd123.crystalize.anim.TimelineGroup;
 
 /**
  * <p>
@@ -84,10 +87,13 @@ public class TemplatedAnimationController implements AnimationController, HasTim
 		Animator animator = animators.get(part.getAnimatorId());
 
 		if (animator != null) {
-			Transformation tf = animator.getAt(time);
-			part.getTranslation().add(tf.translate().x() / 16f, tf.translate().y() / 16f, tf.translate().z() / 16f);
-			part.getRotation().add(tf.rotate());
-			part.getScale().mul(tf.scale());
+			Vector3f v = new Vector3f();
+
+			for (Channel channel : Channel.values()) {
+				TimelineGroup ch = animator.getChannel(channel);
+				Vector3f target = part.getFromChannel(channel);
+				channel.transformApply(ch.interpolate(time, v), target);
+			}
 		}
 	}
 

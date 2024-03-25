@@ -12,9 +12,8 @@ import org.joml.Vector3f;
 
 /**
  * <p>
- * An implementation of FABRIK algorithm. Only support unconstrained joints at
- * this moment (though with hope and dream, the joint constraints shall be
- * implemented).
+ * An implementation of FABRIK algorithm. Support joints constraints (through
+ * the manipulation of direction vectors).
  * </p>
  * 
  * @see #getChainIds()

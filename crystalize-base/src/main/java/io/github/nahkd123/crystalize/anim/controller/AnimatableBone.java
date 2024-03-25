@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.joml.Vector3f;
 
 import io.github.nahkd123.crystalize.anim.Animation;
+import io.github.nahkd123.crystalize.anim.Channel;
 import io.github.nahkd123.crystalize.model.ElementGroup;
 
 /**
@@ -92,6 +93,15 @@ public interface AnimatableBone {
 	 * @return The bone scale.
 	 */
 	public Vector3f getScale();
+
+	default Vector3f getFromChannel(Channel channel) {
+		return switch (channel) {
+		case TRANSLATION -> getTranslation();
+		case ROTATION -> getRotation();
+		case SCALE -> getScale();
+		default -> throw new IllegalArgumentException("Unknown channel: " + channel);
+		};
+	}
 
 	/**
 	 * <p>

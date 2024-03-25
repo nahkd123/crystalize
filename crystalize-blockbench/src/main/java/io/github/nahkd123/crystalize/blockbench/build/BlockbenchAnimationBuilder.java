@@ -125,6 +125,7 @@ public class BlockbenchAnimationBuilder {
 
 	private static float mapFor(Channel channel, float x) {
 		return switch (channel) {
+		case TRANSLATION -> x / 16f;
 		case ROTATION -> (float) Math.toRadians(x);
 		default -> x;
 		};

@@ -7,17 +7,20 @@ package io.github.nahkd123.crystalize.anim.controller;
  * not all animation controller implementations have to do this.
  * </p>
  * <p>
- * Some controllers, like inverse kinematics, allow you to specify a location in
- * 3D space, then the model parts will slowly rotate itself towards the
- * destination. Pretty useful for dynamically animating Chinese dragon.
+ * Some controllers, like {@link FabrikController}, allow you to specify a
+ * location in 3D space, then the model parts will slowly rotate itself towards
+ * the destination. Pretty useful for dynamically animating Chinese dragon.
  * </p>
  * <p>
  * Crystalize provides {@link TemplatedAnimationController} out of the box,
  * which is a controller that animates the bones based on predefined animation
  * (either converted from Blockbench, or manually constructed from your code).
+ * Crystalize also provides {@link FabrikController}, which is a FABRIK
+ * implementation for solving IK.
  * </p>
  * 
  * @see TemplatedAnimationController
+ * @see FabrikController
  */
 public interface AnimationController {
 	/**

@@ -2,6 +2,17 @@ package io.github.nahkd123.crystalize.anim.controller;
 
 import io.github.nahkd123.crystalize.anim.AnimateMode;
 
+/**
+ * <p>
+ * An animation controller that implements {@link CanStop} can be stopped by
+ * using {@link #stop()}. The controller may choose to keep playing animation
+ * until the end or interpolate from current animation state to initial state
+ * (or zero state).
+ * </p>
+ * 
+ * @see #stop()
+ * @see #isStopped()
+ */
 public interface CanStop extends AnimationController {
 	/**
 	 * <p>
@@ -20,7 +31,8 @@ public interface CanStop extends AnimationController {
 
 	/**
 	 * <p>
-	 * Check the stop state of this animation controller.
+	 * Check the stop state of this animation controller. See {@link #stop()} for
+	 * more info.
 	 * </p>
 	 * 
 	 * @return The stop state.

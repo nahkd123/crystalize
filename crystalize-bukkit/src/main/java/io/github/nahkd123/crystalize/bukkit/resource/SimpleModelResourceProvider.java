@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -48,9 +47,6 @@ public abstract class SimpleModelResourceProvider implements ModelResourceProvid
 	}
 
 	protected Optional<Model> readBlockbenchModel(InputStream stream, String file) throws IOException {
-		return readJsonModel(stream, BlockbenchProject.CODEC, proj -> {
-			UUID rootId = UUID.nameUUIDFromBytes("root".getBytes(StandardCharsets.UTF_8));
-			return BlockbenchModelBuilder.build(rootId, proj);
-		}, file);
+		return readJsonModel(stream, BlockbenchProject.CODEC, proj -> BlockbenchModelBuilder.build(proj), file);
 	}
 }

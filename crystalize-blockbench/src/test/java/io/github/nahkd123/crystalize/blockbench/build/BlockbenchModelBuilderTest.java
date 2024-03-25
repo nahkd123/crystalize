@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +35,7 @@ class BlockbenchModelBuilderTest {
 	@Test
 	void testBuild() {
 		BlockbenchProject project = open("bones_chain.bbmodel");
-		Model model = BlockbenchModelBuilder.build(UUID.nameUUIDFromBytes(new byte[0]), project);
+		Model model = BlockbenchModelBuilder.build(project);
 		HierarchicalRecords.print(model, "", "", System.out::println);
 	}
 }

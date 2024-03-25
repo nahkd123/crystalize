@@ -6,7 +6,8 @@ public interface Element {
 	/**
 	 * <p>
 	 * The origin (as known as pivot point) of this element in model local space.
-	 * This value is relative to parent element.
+	 * This value is relative to parent element. The world origin value can be
+	 * obtained by scaling this value by {@code 1/16}.
 	 * </p>
 	 * <p>
 	 * This element will rotate around its origin.
@@ -25,10 +26,4 @@ public interface Element {
 	 * @return The rotation of this element.
 	 */
 	public Vector3fc rotation();
-
-	/*
-	 * Transformations of the current element should only be applied to display
-	 * entity of current element (a.k.a it will not affect the children display
-	 * entity directly). Ok but tbh this is really hard to explain.
-	 */
 }

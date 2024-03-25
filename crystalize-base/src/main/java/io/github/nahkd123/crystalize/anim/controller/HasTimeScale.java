@@ -2,8 +2,9 @@ package io.github.nahkd123.crystalize.anim.controller;
 
 /**
  * <p>
- * An animation controller that implements {@link HasTimeScale} can be used to
- * control the animation speed.
+ * An animation controller that implements {@link HasTimeScale} can have its
+ * animation speed controlled through {@link #setTimeScale(float)} method, even
+ * while the animation is playing.
  * </p>
  * 
  * @see #setTimeScale(float)
@@ -12,7 +13,7 @@ package io.github.nahkd123.crystalize.anim.controller;
 public interface HasTimeScale extends AnimationController {
 	/**
 	 * <p>
-	 * Get the time scale.
+	 * Get the time scale. See {@link #setTimeScale(float)} for more info.
 	 * </p>
 	 * 
 	 * @return The time scale.

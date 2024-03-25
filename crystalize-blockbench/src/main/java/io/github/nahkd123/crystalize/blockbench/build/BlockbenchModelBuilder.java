@@ -28,6 +28,10 @@ import io.github.nahkd123.crystalize.model.face.Face;
 import io.github.nahkd123.crystalize.texture.Texture;
 
 public class BlockbenchModelBuilder {
+	public static Model build(BlockbenchProject project) {
+		return build(Model.ROOT_UUID, project);
+	}
+
 	public static Model build(UUID rootUuid, BlockbenchProject project) {
 		BbElementGroup root = new BbElementGroup(rootUuid, new Vector3f(), new Vector3f(), true, project.outliner());
 		ElementGroup builtRoot = build(root, project, root);

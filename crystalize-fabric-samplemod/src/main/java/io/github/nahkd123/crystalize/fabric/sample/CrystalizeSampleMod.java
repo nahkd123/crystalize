@@ -6,7 +6,6 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,10 +54,6 @@ public class CrystalizeSampleMod implements ModInitializer {
 		// registered your model by using ModelsManager#getModel(Identifier).
 	}
 
-	// Root bone ID
-	// BlockbenchModelBuilder requires an ID for the root bone/group
-	private static final UUID ROOT_BONE_ID = UUID.nameUUIDFromBytes("root".getBytes(StandardCharsets.UTF_8));
-
 	/*
 	 * This method load a model from mod with ID assigned to MODID constant (which
 	 * is "crystalize-samplemod").
@@ -74,6 +69,6 @@ public class CrystalizeSampleMod implements ModInitializer {
 				}
 			})
 			.flatMap(json -> BlockbenchProject.CODEC.decode(JsonOps.INSTANCE, json).resultOrPartial(LOGGER::error))
-			.map(pair -> BlockbenchModelBuilder.build(ROOT_BONE_ID, pair.getFirst()));
+			.map(pair -> BlockbenchModelBuilder.build(pair.getFirst()));
 	}
 }
