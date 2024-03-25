@@ -85,8 +85,8 @@ public class TemplatedAnimationController implements AnimationController, HasTim
 
 		if (animator != null) {
 			Transformation tf = animator.getAt(time);
-			part.getTranslation().add(tf.translate().x(), tf.translate().y(), -tf.translate().z());
-			part.getRotation().add(-tf.rotate().z(), -tf.rotate().y(), tf.rotate().x());
+			part.getTranslation().add(tf.translate().x() / 16f, tf.translate().y() / 16f, tf.translate().z() / 16f);
+			part.getRotation().add(tf.rotate());
 			part.getScale().mul(tf.scale());
 		}
 	}

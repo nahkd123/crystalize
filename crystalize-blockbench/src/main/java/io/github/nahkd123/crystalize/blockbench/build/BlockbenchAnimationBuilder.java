@@ -1,5 +1,9 @@
 package io.github.nahkd123.crystalize.blockbench.build;
 
+import static io.github.nahkd123.crystalize.anim.Subchannel.X;
+import static io.github.nahkd123.crystalize.anim.Subchannel.Y;
+import static io.github.nahkd123.crystalize.anim.Subchannel.Z;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,13 +12,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import io.github.nahkd123.crystalize.anim.AnimateMode;
 import io.github.nahkd123.crystalize.anim.Animation;
 import io.github.nahkd123.crystalize.anim.Animator;
 import io.github.nahkd123.crystalize.anim.Channel;
 import io.github.nahkd123.crystalize.anim.Keyframe;
-import io.github.nahkd123.crystalize.anim.Subchannel;
 import io.github.nahkd123.crystalize.anim.TimelineGroup;
 import io.github.nahkd123.crystalize.anim.func.Easing;
 import io.github.nahkd123.crystalize.anim.func.EasingFunction;
@@ -86,12 +90,7 @@ public class BlockbenchAnimationBuilder {
 			default -> EasingFunction.LINEAR;
 			};
 
-			// @formatter:off
-			float time = (float) sourceKf.time();
-			group.getSubchannel(Subchannel.X).setKeyframe(new Keyframe(time, mapFor(channel, sourceKf.data().x()), easing));
-			group.getSubchannel(Subchannel.Y).setKeyframe(new Keyframe(time, mapFor(channel, sourceKf.data().y()), easing));
-			group.getSubchannel(Subchannel.Z).setKeyframe(new Keyframe(time, mapFor(channel, sourceKf.data().z()), easing));
-			// @formatter:on
+			setKeyframe((float) sourceKf.time(), sourceKf.data(), easing, group);
 
 			switch (channel) {
 			case TRANSLATION -> lastPosition = sourceKf;
@@ -103,9 +102,29 @@ public class BlockbenchAnimationBuilder {
 		return animator;
 	}
 
+	private static void setKeyframe(float time, Vector3fc data, Easing easing, TimelineGroup group) {
+		float x = mapFor(group.getChannel(), data.x());
+		float y = mapFor(group.getChannel(), data.y());
+		float z = mapFor(group.getChannel(), data.z());
+
+		switch (group.getChannel()) {
+		case TRANSLATION -> { z = -z; }
+		case ROTATION -> {
+			float auxX = x, auxY = y, auxZ = z;
+			x = -auxZ;
+			y = -auxY;
+			z = auxX;
+		}
+		default -> {}
+		}
+
+		group.getSubchannel(X).setKeyframe(new Keyframe(time, x, easing));
+		group.getSubchannel(Y).setKeyframe(new Keyframe(time, y, easing));
+		group.getSubchannel(Z).setKeyframe(new Keyframe(time, z, easing));
+	}
+
 	private static float mapFor(Channel channel, float x) {
 		return switch (channel) {
-		case TRANSLATION -> x / 16f;
 		case ROTATION -> (float) Math.toRadians(x);
 		default -> x;
 		};
