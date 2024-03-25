@@ -3,6 +3,7 @@ package io.github.nahkd123.crystalize.fabric.model;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.joml.Vector3f;
@@ -11,6 +12,7 @@ import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
 import io.github.nahkd123.crystalize.anim.controller.AnimateResult;
 import io.github.nahkd123.crystalize.anim.controller.AnimationController;
+import io.github.nahkd123.crystalize.fabric.CrystalizeFabric;
 import io.github.nahkd123.crystalize.model.Element;
 import io.github.nahkd123.crystalize.model.ElementGroup;
 import io.github.nahkd123.crystalize.model.Model;
@@ -33,6 +35,7 @@ public class CrystalizeElementHolder extends ElementHolder {
 	// TODO model scale here?
 
 	public CrystalizeElementHolder(RegisteredModel base, TranslateStrategy translateStrategy) {
+		Objects.requireNonNull(base, "base can't be null");
 		this.base = base;
 		this.translateStrategy = translateStrategy != null ? translateStrategy : TranslateStrategy.MIXED;
 		this.root = createBone(getTemplate().root(), null);
@@ -42,6 +45,22 @@ public class CrystalizeElementHolder extends ElementHolder {
 
 	public CrystalizeElementHolder(RegisteredModel base) {
 		this(base, TranslateStrategy.MIXED);
+	}
+
+	public CrystalizeElementHolder(Identifier registeredId, TranslateStrategy translateStrategy) {
+		Objects.requireNonNull(registeredId, "registeredId can't be null");
+		RegisteredModel base = CrystalizeFabric.getInstance().getModelsManager().getModel(registeredId);
+		if (base == null) throw new IllegalStateException("Model '" + registeredId + "' is not registered!");
+
+		this.base = base;
+		this.translateStrategy = translateStrategy != null ? translateStrategy : TranslateStrategy.MIXED;
+		this.root = createBone(getTemplate().root(), null);
+		this.root.updateTree();
+		this.lastNano = System.nanoTime();
+	}
+
+	public CrystalizeElementHolder(Identifier registeredId) {
+		this(registeredId, TranslateStrategy.MIXED);
 	}
 
 	public RegisteredModel getBase() { return base; }

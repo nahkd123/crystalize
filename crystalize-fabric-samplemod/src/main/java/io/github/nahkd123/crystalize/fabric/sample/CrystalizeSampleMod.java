@@ -17,16 +17,20 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.JsonOps;
 
+import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import io.github.nahkd123.crystalize.blockbench.BlockbenchProject;
 import io.github.nahkd123.crystalize.blockbench.build.BlockbenchModelBuilder;
 import io.github.nahkd123.crystalize.fabric.CrystalizeFabric;
 import io.github.nahkd123.crystalize.fabric.model.ModelsManager;
 import io.github.nahkd123.crystalize.fabric.sample.command.CrystalizeCommand;
+import io.github.nahkd123.crystalize.fabric.sample.entity.RoboticArmEntity;
 import io.github.nahkd123.crystalize.model.Model;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class CrystalizeSampleMod implements ModInitializer {
@@ -66,6 +70,12 @@ public class CrystalizeSampleMod implements ModInitializer {
 		// Additionally, you can attach CrystalizeElementHolder to any custom Polymer
 		// entity you want. You can obtain an instance of RegisteredModel when you've
 		// registered your model by using ModelsManager#getModel(Identifier).
+
+		// Now let's register our entity that uses our custom model!
+		// Our entity is 100% server-side, which means client only need to accept server
+		// resource pack to see your robotic arms!
+		Registry.register(Registries.ENTITY_TYPE, new Identifier(MODID, "robotic_arm"), RoboticArmEntity.TYPE);
+		PolymerEntityUtils.registerType(RoboticArmEntity.TYPE);
 	}
 
 	/*

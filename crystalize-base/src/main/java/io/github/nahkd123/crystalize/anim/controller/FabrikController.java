@@ -236,7 +236,7 @@ public class FabrikController implements AnimationController {
 			float y = Math.abs(forward.y);
 			float z = forward.z;
 
-			float yaw = (float) Math.atan2(-x, z);
+			float yaw = (float) Math.atan2(x, z);
 			float pitch = downward
 				? (float) (Math.PI - Math.acos(y))
 				: (float) Math.acos(y);
