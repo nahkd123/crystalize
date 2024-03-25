@@ -41,16 +41,16 @@ public class Timeline {
 		int search = Collections.binarySearch(keyframes, new Keyframe(t, 0));
 		if (search >= 0) return keyframes.get(search).time();
 
-		int currentIdx = -search - 2;
-		if (currentIdx >= keyframes.size()) return keyframes.get(keyframes.size() - 1).value();
-
-		Keyframe current = keyframes.get(currentIdx);
-		int nextIdx = currentIdx + 1;
-		if (nextIdx >= keyframes.size()) return current.value();
+		int nextIdx = -search - 1;
+		if (nextIdx >= keyframes.size()) return keyframes.get(keyframes.size() - 1).value();
 
 		Keyframe next = keyframes.get(nextIdx);
-		float x = (t - current.time()) / (next.time() - current.time());
-		return current.value() + next.easing().apply(x) * (next.value() - current.value());
+		int prevIdx = nextIdx - 1;
+		if (prevIdx < 0) return next.value();
+
+		Keyframe prev = keyframes.get(prevIdx);
+		float x = (t - prev.time()) / (next.time() - prev.time());
+		return prev.value() + next.easing().apply(x) * (next.value() - prev.value());
 	}
 
 	@Override
