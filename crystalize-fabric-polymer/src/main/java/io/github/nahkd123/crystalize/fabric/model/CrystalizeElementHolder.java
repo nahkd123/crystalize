@@ -2,9 +2,9 @@ package io.github.nahkd123.crystalize.fabric.model;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.joml.Vector3f;
 
@@ -25,8 +25,8 @@ public class CrystalizeElementHolder extends ElementHolder {
 
 	// Animation
 	private long lastNano;
-	private Set<AnimationController> animationControllers = new HashSet<>();
-	private Set<AnimationController> pendingRemoval = new HashSet<>();
+	private Set<AnimationController> animationControllers = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private Set<AnimationController> pendingRemoval = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private boolean updatingAnimations = false;
 
 	// Transform
@@ -39,7 +39,8 @@ public class CrystalizeElementHolder extends ElementHolder {
 		this.base = base;
 		this.translateStrategy = translateStrategy != null ? translateStrategy : TranslateStrategy.MIXED;
 		this.root = createBone(getTemplate().root(), null);
-		this.root.updateTree();
+		this.root.computeTree();
+		this.root.tickTree();
 		this.lastNano = System.nanoTime();
 	}
 
@@ -55,7 +56,8 @@ public class CrystalizeElementHolder extends ElementHolder {
 		this.base = base;
 		this.translateStrategy = translateStrategy != null ? translateStrategy : TranslateStrategy.MIXED;
 		this.root = createBone(getTemplate().root(), null);
-		this.root.updateTree();
+		this.root.computeTree();
+		this.root.tickTree();
 		this.lastNano = System.nanoTime();
 	}
 
@@ -125,11 +127,18 @@ public class CrystalizeElementHolder extends ElementHolder {
 
 	@Override
 	protected void onTick() {
+		animationTick();
+		updateTick();
+	}
+
+	public void updateTick() {
+		root.tickTree();
+	}
+
+	public void animationTick() {
 		updateAnimations((float) ((System.nanoTime() - lastNano) / 1_000_000000d));
 		lastNano = System.nanoTime();
-		root.updateTree();
-
-		// Cleanup
+		root.computeTree();
 		pendingRemoval.forEach(animationControllers::remove);
 		pendingRemoval.clear();
 	}

@@ -1,0 +1,10 @@
+{
+	"required": true,
+	"package": "io.github.nahkd123.crystalize.fabric.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

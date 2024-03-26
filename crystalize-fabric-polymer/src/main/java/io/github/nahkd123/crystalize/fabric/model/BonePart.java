@@ -1,5 +1,7 @@
 package io.github.nahkd123.crystalize.fabric.model;
 
+import static io.github.nahkd123.crystalize.fabric.model.TranslateStrategy.POSITION_ONLY;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import org.joml.Vector3f;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
 import io.github.nahkd123.crystalize.anim.controller.AnimatableBone;
 import io.github.nahkd123.crystalize.anim.controller.AnimationController;
+import io.github.nahkd123.crystalize.fabric.utils.ModifiableHandle;
 import io.github.nahkd123.crystalize.model.ElementGroup;
 import net.minecraft.util.math.Vec3d;
 
@@ -24,13 +27,12 @@ public class BonePart implements AnimatableBone {
 	public final Vector3f boneRotation = new Vector3f();
 	public final Vector3f boneScale = new Vector3f();
 
-	// Bandage interpolation fix
-	private Vector3f lastComputedTranslate = new Vector3f();
-	private Vector3f lastBoneRotation = new Vector3f();
-	private Vector3f lastBoneScale = new Vector3f();
-	private Vector3f lastModelRot = new Vector3f();
-
 	// Reduce send packet calls
+	private ModifiableHandle<Vector3f> displayTranslation = new ModifiableHandle<>(Vector3f::new, Vector3f::set);
+	private ModifiableHandle<Quaternionf> displayModelRotation = new ModifiableHandle<>(Quaternionf::new, Quaternionf::set);
+	private ModifiableHandle<Vector3f> displayPartRotation = new ModifiableHandle<>(Vector3f::new, Vector3f::set);
+	private ModifiableHandle<Vector3f> displayScale = new ModifiableHandle<>(() -> new Vector3f(1, 1, 1), Vector3f::set);
+	private Quaternionf displayPartQuaternion = new Quaternionf();
 	private Vec3d lastEntityOffset = null;
 
 	public BonePart(CrystalizeElementHolder holder, BonePart parent, ElementGroup template, ItemDisplayElement display) {
@@ -68,12 +70,26 @@ public class BonePart implements AnimatableBone {
 	public Vector3f getScale() { return boneScale; }
 
 	/**
+	 * @deprecated use {@link #computeTree()} and {@link #tickTree()}
+	 */
+	@Deprecated
+	public void updateTree() {
+		computeTree();
+		tickTree();
+	}
+
+	/**
 	 * <p>
-	 * Update position and display transformations for this bone, along with its
-	 * children.
+	 * Compute the display entity's transformations before applying to the entity.
+	 * This also compute the animations.
+	 * </p>
+	 * <p>
+	 * Originally intended to send this for off-thread computation, but it causes
+	 * the parts to separate, so I decided to let it run on main thread instead for
+	 * the time being.
 	 * </p>
 	 */
-	public void updateTree() {
+	public void computeTree() {
 		if (parent != null) {
 			boneOrigin
 				.set(parent.boneOrigin)
@@ -125,36 +141,36 @@ public class BonePart implements AnimatableBone {
 			lastEntityOffset = entityOffset;
 		}
 
-		applyTransformations(computedTranslate, modelRot);
-		for (BonePart child : children) child.updateTree();
+		displayTranslation.getCurrent().set(computedTranslate);
+		displayModelRotation.getCurrent().set(modelRot);
+		displayPartRotation.getCurrent().set(boneRotation);
+		displayPartQuaternion.identity().rotateZYX(boneRotation.x, boneRotation.y, boneRotation.z);
+		displayScale.getCurrent().set(boneScale);
+		for (BonePart child : children) child.computeTree();
 	}
 
-	private void applyTransformations(Vector3f computedTranslate, Quaternionf modelRotation) {
-		boolean translateChanged = !lastComputedTranslate.equals(computedTranslate);
-		boolean rotationChanged = !lastBoneRotation.equals(boneRotation);
-		boolean scaleChanged = !lastBoneScale.equals(boneScale);
-		boolean modelRotChanged = !lastModelRot.equals(holder.modelRotation);
-		boolean interpolation = translateChanged || rotationChanged || scaleChanged || modelRotChanged;
+	/**
+	 * <p>
+	 * Send transformations of this part to watching players.
+	 * </p>
+	 */
+	public void tickTree() {
+		boolean interpolate = displayTranslation.isModified()
+			|| displayModelRotation.isModified()
+			|| displayPartRotation.isModified()
+			|| displayScale.isModified();
 
-		if (translateChanged)
-			display.setTranslation(computedTranslate);
-		if (rotationChanged)
-			display.setRightRotation(new Quaternionf().rotateZYX(boneRotation.x, boneRotation.y, boneRotation.z));
-		if (scaleChanged)
-			display.setScale(boneScale);
-		if (modelRotChanged)
-			display.setLeftRotation(modelRotation);
+		displayTranslation.onModified(display::setTranslation);
+		displayModelRotation.onModified(display::setLeftRotation);
+		displayPartRotation.onModified($ -> display.setRightRotation(displayPartQuaternion));
+		displayScale.onModified(display::setScale);
 
-		if (holder.getTranslateStrategy() != TranslateStrategy.POSITION_ONLY && interpolation) {
+		if (holder.getTranslateStrategy() != POSITION_ONLY && interpolate) {
 			display.setStartInterpolation(0);
 			display.setInterpolationDuration(1);
 		}
+		if (holder.getTranslateStrategy() == POSITION_ONLY) display.setInterpolationDuration(0);
 
-		if (holder.getTranslateStrategy() == TranslateStrategy.POSITION_ONLY) display.setInterpolationDuration(0);
-
-		lastComputedTranslate.set(computedTranslate);
-		lastBoneRotation.set(boneRotation);
-		lastBoneScale.set(boneScale);
-		lastModelRot.set(holder.modelRotation);
+		for (BonePart child : children) child.tickTree();
 	}
 }

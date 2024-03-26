@@ -16,14 +16,11 @@
 		"main": ["io.github.nahkd123.crystalize.fabric.CrystalizeMod"],
 		"client": []
 	},
-	"mixins": [],
+	"mixins": ["crystalize.mixins.json"],
 	"depends": {
 		"fabricloader": ">=0.15.7",
 		"minecraft": "~1.20.4",
 		"java": ">=17",
 		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }
