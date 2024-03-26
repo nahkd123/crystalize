@@ -14,9 +14,6 @@ Crystalize uses display entities to display models from Blockbench (non-cube mes
 Custom model animation completely client-side!
 </p>
 
-## The tech behind Crystalize (and Nylon, along with other server-side models library)
-display entties lol.
-
 ## Features
 ### Blockbench Models loader
 Load models directly from your Blockbench project file! Crystalize will automatically construct all model parts as JSON models and assign it to custom model data value of `minecraft:command_block`.
@@ -29,6 +26,51 @@ Tired of animating each part one by one? Now you can use `FabrikController` ([FA
 <br>
 Inverse Kinematics (unconstrained)
 </p>
+
+## Attaching Crystalize model to your entity
+It is pretty simple to attach Crystalize model to your entity. Here is an example:
+
+```java
+public class RoboticArmEntity extends Entity implements PolymerEntity {
+	private static final Identifier MODEL_ID = new Identifier(CrystalizeSampleMod.MODID, "robotic_arm");
+	private CrystalizeElementHolder modelHolder;
+	private Vector3f target = new Vector3f();
+
+	public RoboticArmEntity(EntityType<? extends RoboticArmEntity> type, World world) {
+		super(type, world);
+		EntityAttachment.ofTicking(modelHolder = new CrystalizeElementHolder(MODEL_ID, TranslateStrategy.TRANSLATION_ONLY), this);
+
+		// Let's make our robotic arm tracking nearby players!
+		// Get these IDs from robotic_arm.bbmodel
+		modelHolder.addAnimation(new FabrikController(Arrays.asList(
+			"984422d6-82df-2fc5-9509-809912aa01fd",
+			"fd6d3d3e-aa57-518e-b758-3e56901278ea",
+			"e99bebd5-5564-9731-9819-3bb487096f1c"), target));
+	}
+
+	public RoboticArmEntity(World world, Vec3d pos) {
+		this(TYPE, world);
+		setPosition(pos);
+	}
+
+	@Override
+	public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
+		return EntityType.INTERACTION;
+	}
+
+	// Stripped initDataTracker, readCustomDataFromNbt and writeCustomDataToNbt.
+
+	@Override
+	public void tick() {
+		super.tick();
+		PlayerEntity closest = getWorld().getClosestPlayer(getX(), getY(), getZ(), 3d, false);
+		if (closest == null) return;
+		target.set(closest.getPos().toVector3f()).sub(getPos().toVector3f());
+	}
+}
+```
+
+See [this code](./crystalize-fabric-samplemod/src/main/java/io/github/nahkd123/crystalize/fabric/sample/entity/RoboticArmEntity.java), which is the code above but with comments.
 
 ## Crystalize components
 ### Crystalize Base
