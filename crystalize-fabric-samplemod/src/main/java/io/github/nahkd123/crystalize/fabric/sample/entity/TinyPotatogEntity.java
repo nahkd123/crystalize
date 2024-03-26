@@ -73,15 +73,16 @@ public class TinyPotatogEntity extends FrogEntity implements PolymerEntity {
 
 		if (limbAnimator.isLimbMoving()) {
 			if (walkingController == null)
-				holder.addAnimation(walkingController = new TemplatedAnimationController(walkingAnimation, 1f, null));
+				holder.addAnimation(walkingController = new TemplatedAnimationController(walkingAnimation));
 			walkingController.setTimeScale(limbAnimator.getSpeed());
+			walkingController.setInfluence(limbAnimator.getSpeed());
 		} else if (!limbAnimator.isLimbMoving() && walkingController != null) {
 			holder.removeAnimation(walkingController);
 			walkingController = null;
 		}
 
 		if (longJumpingAnimationState.isRunning() && jumpingController == null) {
-			holder.addAnimation(jumpingController = new TemplatedAnimationController(jumpAnimation, 1f, null));
+			holder.addAnimation(jumpingController = new TemplatedAnimationController(jumpAnimation));
 		} else if (!longJumpingAnimationState.isRunning() && jumpingController != null) {
 			holder.removeAnimation(jumpingController);
 			jumpingController = null;

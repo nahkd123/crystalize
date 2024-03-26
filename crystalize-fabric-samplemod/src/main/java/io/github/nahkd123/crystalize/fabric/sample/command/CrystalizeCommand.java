@@ -130,11 +130,13 @@ public class CrystalizeCommand {
 		return literal("add-animation").then(argument("uuid", UuidArgumentType.uuid()).suggests(holdersUuids())
 			.then(argument("animationId", StringArgumentType.string()).suggests(holderAnimationIds())
 				.then(argument("timescale", FloatArgumentType.floatArg(0.01f, 100f))
-					.executes(context -> executeAddAnimation(context, true)))
-				.executes(context -> executeAddAnimation(context, false))));
+					.then(argument("influence", FloatArgumentType.floatArg(0.01f, 100f))
+						.executes(context -> executeAddAnimation(context, true, true)))
+					.executes(context -> executeAddAnimation(context, true, false)))
+				.executes(context -> executeAddAnimation(context, false, false))));
 	}
 
-	private static int executeAddAnimation(CommandContext<ServerCommandSource> context, boolean withTimescale) throws CommandSyntaxException {
+	private static int executeAddAnimation(CommandContext<ServerCommandSource> context, boolean withTimescale, boolean withInfluence) throws CommandSyntaxException {
 		UUID uuid = UuidArgumentType.getUuid(context, "uuid");
 		Map<UUID, CrystalizeElementHolder> map = context.getSource().getWorld().getAttachedOrCreate(HOLDERS);
 		CrystalizeElementHolder holder = map.get(uuid);
@@ -148,9 +150,10 @@ public class CrystalizeCommand {
 
 		Animation animation = animationOpt.get();
 		float timeScale = withTimescale ? FloatArgumentType.getFloat(context, "timescale") : 1f;
+		float influence = withInfluence ? FloatArgumentType.getFloat(context, "influence") : 1f;
 		AnimateMode modeOverride = null; // TODO allow overriding animate mode
 
-		AnimationController controller = new TemplatedAnimationController(animation, timeScale, modeOverride);
+		AnimationController controller = new TemplatedAnimationController(animation, timeScale, influence, modeOverride);
 		holder.addAnimation(controller);
 		context.getSource().sendFeedback(() -> translatable("crystalize.command.addedAnimation",
 			uuid,
