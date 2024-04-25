@@ -11,10 +11,10 @@ import eu.pb4.polymer.virtualentity.api.attachment.EntityAttachment;
 import io.github.nahkd123.crystalize.anim.controller.FabrikController;
 import io.github.nahkd123.crystalize.fabric.model.CrystalizeElementHolder;
 import io.github.nahkd123.crystalize.fabric.sample.CrystalizeSampleMod;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,8 +24,8 @@ import net.minecraft.world.World;
 
 public class RoboticArmEntity extends Entity implements PolymerEntity {
 	private static final Identifier MODEL_ID = new Identifier(CrystalizeSampleMod.MODID, "robotic_arm");
-	public static final EntityType<RoboticArmEntity> TYPE = FabricEntityTypeBuilder
-		.<RoboticArmEntity>create(SpawnGroup.MISC, RoboticArmEntity::new)
+	public static final EntityType<RoboticArmEntity> TYPE = EntityType.Builder
+		.<RoboticArmEntity>create(RoboticArmEntity::new, SpawnGroup.MISC)
 		.build();
 
 	private CrystalizeElementHolder modelHolder;
@@ -64,7 +64,7 @@ public class RoboticArmEntity extends Entity implements PolymerEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {}
+	protected void initDataTracker(DataTracker.Builder builder) {}
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {}

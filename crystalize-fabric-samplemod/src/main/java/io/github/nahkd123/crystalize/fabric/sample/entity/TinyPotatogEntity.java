@@ -13,7 +13,6 @@ import eu.pb4.polymer.virtualentity.mixin.accessors.InteractionEntityAccessor;
 import io.github.nahkd123.crystalize.anim.Animation;
 import io.github.nahkd123.crystalize.anim.controller.TemplatedAnimationController;
 import io.github.nahkd123.crystalize.fabric.model.CrystalizeElementHolder;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.data.DataTracker;
@@ -27,9 +26,9 @@ import net.minecraft.world.World;
 
 public class TinyPotatogEntity extends FrogEntity implements PolymerEntity {
 	private static final Identifier MODEL_ID = new Identifier(MODID, "tiny_potatog");
-	public static final EntityType<TinyPotatogEntity> TYPE = FabricEntityTypeBuilder
-		.<TinyPotatogEntity>create(SpawnGroup.MISC, TinyPotatogEntity::new)
-		.trackRangeBlocks(10)
+	public static final EntityType<TinyPotatogEntity> TYPE = EntityType.Builder
+		.<TinyPotatogEntity>create(TinyPotatogEntity::new, SpawnGroup.MISC)
+		.maxTrackingRange(10)
 		.build();
 
 	private CrystalizeElementHolder holder;

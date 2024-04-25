@@ -121,7 +121,7 @@ public class CrystalizeSampleMod implements ModInitializer {
 					var result = BlockbenchProject.CODEC.decode(JsonOps.INSTANCE, json);
 					if (result.error().isPresent()) throw new JsonSyntaxException(result.error().get().message());
 
-					BlockbenchProject proj = result.get().left().get().getFirst();
+					BlockbenchProject proj = result.getPartialOrThrow().getFirst();
 					Model model = BlockbenchModelBuilder.build(proj);
 					modelsManager.registerModel(modelId, model);
 				} catch (IOException | JsonSyntaxException e) {

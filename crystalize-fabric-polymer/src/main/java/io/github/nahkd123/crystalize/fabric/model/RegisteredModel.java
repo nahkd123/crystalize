@@ -4,9 +4,10 @@ import eu.pb4.polymer.resourcepack.api.PolymerModelData;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import io.github.nahkd123.crystalize.model.ElementGroup;
 import io.github.nahkd123.crystalize.model.Model;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtInt;
 import net.minecraft.util.Identifier;
 
 public interface RegisteredModel {
@@ -23,7 +24,7 @@ public interface RegisteredModel {
 	default ItemStack getItemFor(ElementGroup group) {
 		PolymerModelData modelData = getItemModelFor(group);
 		ItemStack stack = new ItemStack(modelData.item());
-		stack.setSubNbt("CustomModelData", NbtInt.of(modelData.value()));
+		stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(modelData.value()));
 		return stack;
 	}
 }

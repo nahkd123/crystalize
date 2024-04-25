@@ -9,15 +9,9 @@ repositories {
 
 dependencies {
 	implementation project(':crystalize-base')
-	implementation 'com.mojang:datafixerupper:6.0.8'
-	implementation 'org.joml:joml:1.10.5'
+	implementation "com.mojang:datafixerupper:${rootProject.datafixerupper_version}"
+	implementation "org.joml:joml:${rootProject.joml_version}"
 
-	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+	testImplementation "org.junit.jupiter:junit-jupiter:${rootProject.junit_version}"
 	testImplementation project(':crystalize-blockbench')
-}
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
 }
